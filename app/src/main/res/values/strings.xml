@@ -3,17 +3,21 @@
     <string name="appName">RoomDemo</string>
     <string name="actionDeleteItem">Item Deleted</string>
     <string name="actionUndo">UNDO?</string>
+    <string name="errorNoExtraFound">Error Retrieving Item Detail</string>
 
     <!-- used as tags for shared element transitions -->
     <string name="transitionDrawable">drawable</string>
     <string name="transitionMessage">message</string>
     <string name="transitionTimeAndDate">date</string>
-    <string name="titleToolbar">List Activity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="helloBlankFragment">Hello blank fragment</string>
-    <string name="errorNoExtraFound">Error Retrieving Item Detail</string>
+    <string name="listActivityToolbar">Travel list</string>
+    <string name="loginActivityToolbar">Login</string>
+    <string name="singInActivityToolbar">Sign in</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="signInLoginBtn">Don\'t have an account? Sign in</string>
+    <string name="loginBtn">Login</string>
+    <string name="signInBtn">Sign In</string>
+    <string name="editTextUsername">Username</string>
+    <string name="editTextPassword">Password</string>
+    <string name="editTextRepeatPassword">Repeat Password</string>
 </resources>

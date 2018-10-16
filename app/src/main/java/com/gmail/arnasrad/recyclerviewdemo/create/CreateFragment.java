@@ -81,7 +81,7 @@ public class CreateFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_create, container, false);
 
-        back = (ImageButton) v.findViewById(R.id.imbCreateBack);
+        back = v.findViewById(R.id.imbCreateBack);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,7 +90,7 @@ public class CreateFragment extends Fragment {
             }
         });
 
-        done = (ImageButton) v.findViewById(R.id.imbCreateDone);
+        done = v.findViewById(R.id.imbCreateDone);
         done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,14 +105,14 @@ public class CreateFragment extends Fragment {
             }
         });
 
-        messageInput = (EditText) v.findViewById(R.id.edtCreateMessage);
+        messageInput = v.findViewById(R.id.edtCreateMessage);
 
-        drawablePager = (ViewPager) v.findViewById(R.id.vpCreateDrawable);
+        drawablePager = v.findViewById(R.id.vpCreateDrawable);
 
         pagerAdapter = new DrawablePagerAdapter();
         drawablePager.setAdapter(pagerAdapter);
 
-        pageIndicator = (CirclePageIndicator) v.findViewById(R.id.vpiCreateDrawable);
+        pageIndicator = v.findViewById(R.id.vpiCreateDrawable);
         pageIndicator.setViewPager(drawablePager);
 
         return v;
@@ -142,9 +142,11 @@ public class CreateFragment extends Fragment {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             LayoutInflater inflater = LayoutInflater.from(getActivity());
-            ImageView pagerItem = (ImageView) inflater.inflate(R.layout.item_drawable_pager,
-                    container,
-                    false);
+            ImageView pagerItem = (
+                                    ImageView) inflater.inflate(R.layout.item_drawable_pager,
+                                    container,
+                                    false
+            );
 
             switch (position) {
                 case 0:

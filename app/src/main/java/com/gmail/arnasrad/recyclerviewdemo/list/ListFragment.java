@@ -77,7 +77,7 @@ public class ListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ((RoomDemoApplication) Objects.requireNonNull(getActivity()).getApplication())
+        ((RoomDemoApplication) getActivity().getApplication())
                 .getApplicationComponent()
                 .inject(this);
     }

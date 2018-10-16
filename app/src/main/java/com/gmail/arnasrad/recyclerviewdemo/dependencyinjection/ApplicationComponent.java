@@ -29,6 +29,8 @@ import dagger.Component;
 import com.gmail.arnasrad.recyclerviewdemo.create.CreateFragment;
 import com.gmail.arnasrad.recyclerviewdemo.detail.DetailFragment;
 import com.gmail.arnasrad.recyclerviewdemo.list.ListFragment;
+import com.gmail.arnasrad.recyclerviewdemo.login.LoginFragment;
+import com.gmail.arnasrad.recyclerviewdemo.login.SignInFragment;
 
 /**
  * Annotated as a Singelton since we don't want to have multiple instances of a Single Database,
@@ -43,6 +45,8 @@ public interface ApplicationComponent {
     void inject(ListFragment listFragment);
     void inject(CreateFragment createFragment);
     void inject(DetailFragment detailFragment);
+    void inject(LoginFragment loginFragment);
+    void inject(SignInFragment signInFragment);
 
     Application application();
 }

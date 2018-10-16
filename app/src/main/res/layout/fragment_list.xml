@@ -13,7 +13,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="@string/titleToolbar"
+        app:title="@string/listActivityToolbar"
         app:titleTextColor="@color/colorWindowBackground"
         app:titleMarginStart="36dp"/>
 

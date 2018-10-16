@@ -1,6 +1,7 @@
 package com.gmail.arnasrad.recyclerviewdemo.login;
 
 
+import android.arch.lifecycle.ViewModelProvider;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -8,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.gmail.arnasrad.recyclerviewdemo.R;
+
+import javax.inject.Inject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,8 +28,15 @@ public class SignInFragment extends Fragment {
     private String mParam2;
 
 
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
+
     public SignInFragment() {
         // Required empty public constructor
+    }
+
+    public static SignInFragment newInstance() {
+        return new SignInFragment();
     }
 
     /**
