@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.gmail.arnasrad.recyclerviewdemo"
-        minSdkVersion 21
+        minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -25,11 +25,8 @@ dependencies {
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    /*
-        https://github.com/hdodenhof/CircleImageView
-         */
+
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
-    //instead of check Project level build.gradle for version values
     annotationProcessor "android.arch.lifecycle:compiler:$rootProject.archLifecycleCompilerVersion"
     annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomVersion"
     testImplementation 'org.mockito:mockito-core:2.8.9'

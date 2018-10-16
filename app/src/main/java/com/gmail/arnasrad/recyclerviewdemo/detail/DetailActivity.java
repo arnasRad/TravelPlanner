@@ -29,8 +29,6 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-
-
         Intent i = getIntent();
 
         //if extra is null, not worth even bothering to set up the MVVM stuff; Kill it with fire.

@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -99,6 +100,7 @@ public class ListFragment extends Fragment {
 
     }
 
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -106,12 +108,13 @@ public class ListFragment extends Fragment {
 
         recyclerView = v.findViewById(R.id.recListActivity);
         layoutInflater = Objects.requireNonNull(getActivity()).getLayoutInflater();
+/*
         toolbar = v.findViewById(R.id.tlbListActivity);
 
         toolbar.setTitle(R.string.titleToolbar);
         toolbar.setLogo(R.drawable.ic_view_list_white_24dp);
         toolbar.setTitleMarginStart(72);
-
+*/
         FloatingActionButton fabulous = v.findViewById(R.id.fabCreateNewItem);
 
         fabulous.setOnClickListener(new View.OnClickListener() {
@@ -275,7 +278,6 @@ public class ListFragment extends Fragment {
                 );
 
                 startDetailActivity(listItem.getItemId(), v);
-
             }
         }
 

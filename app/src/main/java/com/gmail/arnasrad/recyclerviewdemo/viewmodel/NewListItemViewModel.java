@@ -24,9 +24,6 @@ import android.os.AsyncTask;
 import com.gmail.arnasrad.recyclerviewdemo.data.ListItem;
 import com.gmail.arnasrad.recyclerviewdemo.data.ListItemRepository;
 
-/**
- * Created by R_KAY on 8/11/2017.
- */
 
 public class NewListItemViewModel extends ViewModel {
 

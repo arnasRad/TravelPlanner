@@ -30,32 +30,26 @@ public class ListItem {
     }
 
     public String getItemId() {
-
         return itemId;
     }
 
     public void setItemId(String itemId) {
-
         this.itemId = itemId;
     }
 
     public String getMessage() {
-
         return message;
     }
 
     public void setMessage(String message) {
-
         this.message = message;
     }
 
     public int getColorResource() {
-
         return colorResource;
     }
 
     public void setColorResource(int colorResource) {
-
         this.colorResource = colorResource;
     }
 }

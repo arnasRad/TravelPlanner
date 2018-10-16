@@ -19,6 +19,8 @@
         </activity>
         <activity android:name=".detail.DetailActivity" />
         <activity android:name=".create.CreateActivity" />
+        <activity android:name=".login.LoginActivity" />
+        <activity android:name=".login.SignInActivity"></activity>
     </application>
 
 </manifest>
