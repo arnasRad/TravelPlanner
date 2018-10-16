@@ -26,8 +26,10 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+
+import com.gmail.arnasrad.recyclerviewdemo.data.AccountDao;
 import com.gmail.arnasrad.recyclerviewdemo.data.ListItemDao;
-import com.gmail.arnasrad.recyclerviewdemo.data.ListItemDatabase;
+import com.gmail.arnasrad.recyclerviewdemo.data.TravelPlannerDatabase;
 import com.gmail.arnasrad.recyclerviewdemo.data.ListItemRepository;
 import com.gmail.arnasrad.recyclerviewdemo.viewmodel.CustomViewModelFactory;
 
@@ -38,12 +40,12 @@ import com.gmail.arnasrad.recyclerviewdemo.viewmodel.CustomViewModelFactory;
 @Module
 public class RoomModule {
 
-    private final ListItemDatabase database;
+    private final TravelPlannerDatabase database;
 
     public RoomModule(Application application) {
         this.database = Room.databaseBuilder(
                 application,
-                ListItemDatabase.class,
+                TravelPlannerDatabase.class,
                 "ListItem.db"
         ).build();
     }
@@ -56,13 +58,19 @@ public class RoomModule {
 
     @Provides
     @Singleton
-    ListItemDao provideListItemDao(ListItemDatabase database){
+    ListItemDao provideListItemDao(TravelPlannerDatabase database){
         return database.listItemDao();
     }
 
     @Provides
     @Singleton
-    ListItemDatabase provideListItemDatabase(Application application){
+    AccountDao provideAccountDao(TravelPlannerDatabase database){
+        return database.accountDao();
+    }
+
+    @Provides
+    @Singleton
+    TravelPlannerDatabase provideListItemDatabase(Application application){
         return database;
     }
 

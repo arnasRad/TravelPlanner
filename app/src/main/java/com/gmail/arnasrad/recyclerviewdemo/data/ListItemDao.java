@@ -10,6 +10,7 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
 import java.util.List;
+
 /**
  * This is a Contract between Classes that dictate how they can
  * talk to each other without giving implementation Details

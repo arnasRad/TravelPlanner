@@ -11,17 +11,11 @@ import android.support.annotation.NonNull;
 
 @Entity
 public class ListItem {
-    // Example:
-    // private final String itemId
-    // here 'final' means that the variable can only be initialized in constructor and
-    // cannot be changed later on (for example, setter won't work on this variable)
     @PrimaryKey
     @NonNull
     private String itemId;
     private String message;
     private int colorResource;
-
-
 
     public ListItem(String itemId, String message, int colorResource) {
         this.itemId = itemId;
