@@ -20,4 +20,6 @@
     <string name="editTextUsername">Username</string>
     <string name="editTextPassword">Password</string>
     <string name="editTextRepeatPassword">Repeat Password</string>
+
+    <string name="active_user_shared_preference">com.gmail.arnasrad.travelplanner.ACTIVE_ACCOUNT_PREFERENCE_KEY</string>
 </resources>

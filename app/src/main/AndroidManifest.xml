@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.gmail.arnasrad.recyclerviewdemo">
+    package="com.gmail.arnasrad.travelplanner">
 
     <application
-        android:name=".RoomDemoApplication"
+        android:name="com.gmail.arnasrad.travelplanner.RoomDemoApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/appName"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".list.ListActivity">
+        <activity android:name="com.gmail.arnasrad.travelplanner.login.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".detail.DetailActivity" />
-        <activity android:name=".create.CreateActivity" />
-        <activity android:name=".login.LoginActivity" />
-        <activity android:name=".login.SignInActivity" />
+        <activity android:name="com.gmail.arnasrad.travelplanner.detail.DetailActivity" />
+        <activity android:name="com.gmail.arnasrad.travelplanner.create.CreateActivity" />
+        <activity android:name="com.gmail.arnasrad.travelplanner.list.ListActivity" />
+        <activity android:name="com.gmail.arnasrad.travelplanner.login.SignInActivity" />
     </application>
 
 </manifest>
