@@ -24,11 +24,6 @@ import dagger.Module;
 import dagger.Provides;
 import com.gmail.arnasrad.travelplanner.RoomDemoApplication;
 
-/**
- *
- *
- * Created by R_KAY on 8/15/2017.
- */
 @Module
 public class ApplicationModule {
     private final RoomDemoApplication application;

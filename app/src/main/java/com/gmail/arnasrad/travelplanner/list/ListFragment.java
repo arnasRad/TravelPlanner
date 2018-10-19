@@ -174,6 +174,11 @@ public class ListFragment extends Fragment {
         startActivity(new Intent(getActivity(), LoginActivity.class));
     }
 
+    public void startCreateActivity() {
+        startActivity(new Intent(getActivity(), CreateActivity.class));
+    }
+
+
     public void startDetailActivity(String itemId, View viewRoot) {
         Activity container = getActivity();
         Intent i = new Intent(container, DetailActivity.class);
@@ -198,10 +203,6 @@ public class ListFragment extends Fragment {
         } else {
             startActivity(i);
         }
-    }
-
-    public void startCreateActivity() {
-        startActivity(new Intent(getActivity(), CreateActivity.class));
     }
 
     public String getActiveUserPreference() {
@@ -239,7 +240,7 @@ public class ListFragment extends Fragment {
         itemDecoration.setDrawable(
                 ContextCompat.getDrawable(
                         getActivity(),
-                        R.drawable.divider_white
+                        R.drawable.divider_gray
                 )
         );
 
@@ -255,7 +256,7 @@ public class ListFragment extends Fragment {
 
     /*-------------------- RecyclerView Boilerplate ----------------------*/
 
-    private class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomViewHolder> {//6
+    private class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomViewHolder> {
 
         @NonNull
         @Override
@@ -266,7 +267,6 @@ public class ListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull CustomAdapter.CustomViewHolder holder, int position) {
-            //11. and now the ViewHolder data
             ListItem currentItem = listOfData.get(position);
 
             holder.coloredCircle.setImageResource(currentItem.getColorResource());

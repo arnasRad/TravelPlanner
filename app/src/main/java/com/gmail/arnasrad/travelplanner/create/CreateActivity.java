@@ -9,9 +9,8 @@ import com.gmail.arnasrad.travelplanner.R;
 import static com.gmail.arnasrad.travelplanner.util.BaseActivity.addFragmentToActivity;
 
 public class CreateActivity extends AppCompatActivity {
-
-
-    private static final String CREATE_FRAG = "CREATE_FRAG";
+    private static final String CREATE_MAIN_FRAG = "CREATE_MAIN_FRAG";
+    private static final String CREATE_MAP_FRAG = "CREATE_MAP_FRAG";
 
 
     @Override
@@ -22,17 +21,28 @@ public class CreateActivity extends AppCompatActivity {
 
         FragmentManager manager = getSupportFragmentManager();
 
-        CreateFragment fragment = (CreateFragment) manager.findFragmentByTag(CREATE_FRAG);
+        //CreateFragment mapFragment = (CreateFragment) manager.findFragmentByTag(CREATE_MAP_FRAG);
+        MainCreateFragment mainCreateFragment = (MainCreateFragment) manager.findFragmentByTag(CREATE_MAIN_FRAG);
 
-        if (fragment == null) {
-            fragment = CreateFragment.newInstance();
+        /*if (mapFragment == null) {
+            mapFragment = CreateFragment.newInstance();
+        }*/
+
+        if (mainCreateFragment == null) {
+            mainCreateFragment = MainCreateFragment.newInstance();
         }
 
-        addFragmentToActivity(manager,
-                fragment,
+        /*addFragmentToActivity(manager,
+                mapFragment,
                 R.id.rootActivityCreate,
-                CREATE_FRAG
+                CREATE_MAP_FRAG
+        );*/
+        addFragmentToActivity(manager,
+                mainCreateFragment,
+                R.id.rootActivityCreate,
+                CREATE_MAIN_FRAG
         );
+
 
     }
 }

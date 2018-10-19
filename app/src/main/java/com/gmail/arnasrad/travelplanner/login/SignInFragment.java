@@ -188,7 +188,7 @@ public class SignInFragment extends Fragment implements AccountValidTaskCompl {
         if (resultAcc == null) {
             newAccountViewModel.addNewAccountToDatabase(
                     new Account(username, password));
-            showSnackbar(v, "Account created successfully");
+            showSnackbar(v, "Location created successfully");
 
             startLoginActivity();
         } else

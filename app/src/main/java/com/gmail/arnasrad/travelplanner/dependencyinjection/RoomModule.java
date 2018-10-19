@@ -34,10 +34,6 @@ import com.gmail.arnasrad.travelplanner.data.TravelPlannerDatabase;
 import com.gmail.arnasrad.travelplanner.data.ListItemRepository;
 import com.gmail.arnasrad.travelplanner.viewmodel.CustomViewModelFactory;
 
-/**
- * Modules are responsible for creating/satisfying dependencies
- * Created by R_KAY on 8/18/2017.
- */
 @Module
 public class RoomModule {
 

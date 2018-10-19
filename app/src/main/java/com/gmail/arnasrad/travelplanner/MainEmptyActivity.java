@@ -27,7 +27,7 @@ public class MainEmptyActivity extends AppCompatActivity implements UsernameSear
         super.onCreate(savedInstanceState);
 
         String activeUsername = getActiveUserPreference();
-        if (activeUsername.equals(""))
+        if (activeUsername == null)
             startLoginActivity();
         else
             startListActivity();

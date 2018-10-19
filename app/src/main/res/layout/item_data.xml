@@ -3,6 +3,7 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="88dp"
     android:id="@+id/rootListItem"
@@ -26,7 +27,7 @@
         android:id="@+id/imvDateAndTime"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@drawable/ic_event_white_24dp"
+        android:src="@drawable/ic_date_color_accent_24dp"
         android:alpha=".86"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="44dp"

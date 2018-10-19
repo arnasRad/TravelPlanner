@@ -9,6 +9,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -37,8 +40,6 @@ import javax.inject.Inject;
 public class CreateFragment extends Fragment {
     private ViewPager drawablePager;
     private CirclePageIndicator pageIndicator;
-    private ImageButton back;
-    private ImageButton done;
     private EditText messageInput;
 
     private PagerAdapter pagerAdapter;
@@ -56,6 +57,8 @@ public class CreateFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+
+        setHasOptionsMenu(true);
 
         ((RoomDemoApplication) getActivity().getApplication())
                 .getApplicationComponent()
@@ -81,30 +84,6 @@ public class CreateFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_create, container, false);
 
-        back = v.findViewById(R.id.imbCreateBack);
-
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startListActivity();
-            }
-        });
-
-        done = v.findViewById(R.id.imbCreateDone);
-        done.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ListItem listItem = new ListItem(
-                        getDate(),
-                        messageInput.getText().toString(),
-                        getDrawableResource(drawablePager.getCurrentItem())
-                );
-                newListItemViewModel.addNewItemToDatabase(listItem);
-
-                startListActivity();
-            }
-        });
-
         messageInput = v.findViewById(R.id.edtCreateMessage);
 
         drawablePager = v.findViewById(R.id.vpCreateDrawable);
@@ -116,6 +95,34 @@ public class CreateFragment extends Fragment {
         pageIndicator.setViewPager(drawablePager);
 
         return v;
+    }
+
+
+
+    /*------------------------------- Menu -------------------------------*/
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.done_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.done:
+                ListItem listItem = new ListItem(
+                        getDate(),
+                        messageInput.getText().toString(),
+                        getDrawableResource(drawablePager.getCurrentItem())
+                );
+                newListItemViewModel.addNewItemToDatabase(listItem);
+
+                startListActivity();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     public int getDrawableResource (int pagerItemPosition){

@@ -24,23 +24,22 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import com.gmail.arnasrad.travelplanner.create.CreateFragment;
+import com.gmail.arnasrad.travelplanner.create.MainCreateFragment;
+import com.gmail.arnasrad.travelplanner.create.MapFragment;
 import com.gmail.arnasrad.travelplanner.detail.DetailFragment;
 import com.gmail.arnasrad.travelplanner.list.ListFragment;
 import com.gmail.arnasrad.travelplanner.login.LoginFragment;
 import com.gmail.arnasrad.travelplanner.login.SignInFragment;
 
-/**
- * Annotated as a Singelton since we don't want to have multiple instances of a Single Database,
- * <p>
- * Created by R_KAY on 8/15/2017.
- */
 
 @Singleton
 @Component(modules = {ApplicationModule.class, RoomModule.class})
 public interface ApplicationComponent {
 
     void inject(ListFragment listFragment);
+    void inject(MainCreateFragment mainCreateFragment);
     void inject(CreateFragment createFragment);
+    void inject(MapFragment mapFragment);
     void inject(DetailFragment detailFragment);
     void inject(LoginFragment loginFragment);
     void inject(SignInFragment signInFragment);

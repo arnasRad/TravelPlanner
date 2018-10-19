@@ -1,11 +1,15 @@
-
 <resources>
-    <string name="appName">RoomDemo</string>
+    <string name="appName">TravelPlanner</string>
     <string name="actionDeleteItem">Item Deleted</string>
     <string name="actionUndo">UNDO?</string>
     <string name="errorNoExtraFound">Error Retrieving Item Detail</string>
 
     <string name="menu_sign_out">Sign Out</string>
+
+    <string name="create_add_btn">Add</string>
+    <string name="create_main_destination_lbl">Main destination</string>
+    <string name="create_locations_lbl">Locations</string>
+    <string name="create_people_lbl">People</string>
 
     <!-- used as tags for shared element transitions -->
     <string name="transitionDrawable">drawable</string>
@@ -25,4 +29,8 @@
 
     <string name="active_user_preference_key">com.gmail.arnasrad.travelplanner.ACTIVE_ACCOUNT_PREFERENCE_KEY</string>
     <string name="active_user_key">username</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_maps">Map</string>
 </resources>
