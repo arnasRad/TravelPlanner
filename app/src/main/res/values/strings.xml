@@ -5,6 +5,8 @@
     <string name="actionUndo">UNDO?</string>
     <string name="errorNoExtraFound">Error Retrieving Item Detail</string>
 
+    <string name="menu_sign_out">Sign Out</string>
+
     <!-- used as tags for shared element transitions -->
     <string name="transitionDrawable">drawable</string>
     <string name="transitionMessage">message</string>
@@ -21,5 +23,6 @@
     <string name="editTextPassword">Password</string>
     <string name="editTextRepeatPassword">Repeat Password</string>
 
-    <string name="active_user_shared_preference">com.gmail.arnasrad.travelplanner.ACTIVE_ACCOUNT_PREFERENCE_KEY</string>
+    <string name="active_user_preference_key">com.gmail.arnasrad.travelplanner.ACTIVE_ACCOUNT_PREFERENCE_KEY</string>
+    <string name="active_user_key">username</string>
 </resources>

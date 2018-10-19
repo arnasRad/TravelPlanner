@@ -3,9 +3,7 @@ package com.gmail.arnasrad.travelplanner.login;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -21,13 +19,12 @@ import android.widget.EditText;
 import com.gmail.arnasrad.travelplanner.R;
 import com.gmail.arnasrad.travelplanner.RoomDemoApplication;
 import com.gmail.arnasrad.travelplanner.data.Account;
-import com.gmail.arnasrad.travelplanner.viewmodel.AccountViewModel;
+import com.gmail.arnasrad.travelplanner.viewmodel.AccountValidationViewModel;
 import com.gmail.arnasrad.travelplanner.viewmodel.NewAccountViewModel;
 import com.gmail.arnasrad.travelplanner.viewmodel.AccountValidTaskCompl;
 
 import javax.inject.Inject;
 
-import static android.content.Context.MODE_PRIVATE;
 import static android.text.TextUtils.isEmpty;
 
 
@@ -40,7 +37,7 @@ public class SignInFragment extends Fragment implements AccountValidTaskCompl {
     @Inject
     ViewModelProvider.Factory viewModelFactory;
 
-    private AccountViewModel accountViewModel;
+    private AccountValidationViewModel accountValidationViewModel;
     private NewAccountViewModel newAccountViewModel;
 
     public SignInFragment() {
@@ -56,8 +53,8 @@ public class SignInFragment extends Fragment implements AccountValidTaskCompl {
         super.onActivityCreated(savedInstanceState);
 
         //Set up and subscribe (observe) to the ViewModel
-        accountViewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(AccountViewModel.class);
+        accountValidationViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(AccountValidationViewModel.class);
         newAccountViewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(NewAccountViewModel.class);
     }
@@ -90,7 +87,7 @@ public class SignInFragment extends Fragment implements AccountValidTaskCompl {
                 String password = passwordInput.getText().toString();
                 String rptPassword = repeatPasswordInput.getText().toString();
                 if (password.equals(rptPassword)) {
-                    accountViewModel.isAccInfoUsed(SignInFragment.this, v, username, password);
+                    accountValidationViewModel.isAccInfoUsed(SignInFragment.this, v, username, password);
                 } else {
                     showSnackbar(v, "Password is not repeated correctly");
                 }
@@ -178,7 +175,7 @@ public class SignInFragment extends Fragment implements AccountValidTaskCompl {
     public void onUserValidateTaskComplete(View v, Account resultAcc,
                                            String username, String password) {
         if (resultAcc == null) {
-            accountViewModel.isPasswordUsed(SignInFragment.this, v, null,
+            accountValidationViewModel.isPasswordUsed(SignInFragment.this, v, null,
                     username, password);
         } else {
             showSnackbar(v, "Username already used");
@@ -192,15 +189,6 @@ public class SignInFragment extends Fragment implements AccountValidTaskCompl {
             newAccountViewModel.addNewAccountToDatabase(
                     new Account(username, password));
             showSnackbar(v, "Account created successfully");
-
-
-            Context context = getActivity();
-            String sharedPreference = (context).getResources()
-                    .getString(R.string.active_user_shared_preference);
-            SharedPreferences.Editor editor = context.getSharedPreferences(sharedPreference, MODE_PRIVATE).edit();
-            editor.putString("name", "Elena");
-            editor.putInt("idName", 12);
-            editor.apply();
 
             startLoginActivity();
         } else

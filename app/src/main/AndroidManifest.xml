@@ -10,7 +10,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.gmail.arnasrad.travelplanner.login.LoginActivity">
+        <activity
+            android:name="com.gmail.arnasrad.travelplanner.MainEmptyActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,8 +19,9 @@
             </intent-filter>
         </activity>
         <activity android:name="com.gmail.arnasrad.travelplanner.detail.DetailActivity" />
-        <activity android:name="com.gmail.arnasrad.travelplanner.create.CreateActivity" />
         <activity android:name="com.gmail.arnasrad.travelplanner.list.ListActivity" />
+        <activity android:name="com.gmail.arnasrad.travelplanner.create.CreateActivity" />
+        <activity android:name="com.gmail.arnasrad.travelplanner.login.LoginActivity" />
         <activity android:name="com.gmail.arnasrad.travelplanner.login.SignInActivity" />
     </application>
 

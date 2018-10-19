@@ -6,20 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- TODO: Update blank fragment layout -->
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/tlbSignInActivity"
-        android:layout_width="0dp"
-        android:layout_height="64dp"
-        android:background="@color/colorPrimaryDark"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:title="@string/singInActivityToolbar"
-        app:titleMarginStart="36dp"
-        app:titleTextColor="@color/colorWindowBackground" />
-
     <EditText
         android:id="@+id/signInUsername"
         android:layout_width="wrap_content"
@@ -37,8 +23,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tlbSignInActivity"
-        app:layout_constraintVertical_bias="0.276" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.282" />
 
     <EditText
         android:id="@+id/signInPsw"
@@ -58,7 +44,7 @@
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signInUsername"
-        app:layout_constraintVertical_bias="0.197" />
+        app:layout_constraintVertical_bias="0.284" />
 
     <EditText
         android:id="@+id/signInRptPsw"
@@ -78,7 +64,7 @@
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signInPsw"
-        app:layout_constraintVertical_bias="0.327" />
+        app:layout_constraintVertical_bias="0.323" />
 
     <Button
         android:id="@+id/signInButton"
@@ -94,6 +80,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tlbSignInActivity"
-        app:layout_constraintVertical_bias="0.906" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.888" />
 </android.support.constraint.ConstraintLayout>
