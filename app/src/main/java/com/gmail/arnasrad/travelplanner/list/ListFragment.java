@@ -16,15 +16,14 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.transition.Fade;
+import android.util.Log;
 import android.util.Pair;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,6 +32,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gmail.arnasrad.travelplanner.R;
 import com.gmail.arnasrad.travelplanner.RoomDemoApplication;
@@ -49,6 +49,7 @@ import javax.inject.Inject;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.content.Context.MODE_PRIVATE;
+import static android.support.constraint.Constraints.TAG;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -57,6 +58,7 @@ import static android.content.Context.MODE_PRIVATE;
  */
 public class ListFragment extends Fragment {
     private static final String EXTRA_ITEM_ID = "EXTRA_ITEM_ID";
+
 
     private List<ListItem> listOfData;
 
@@ -120,7 +122,7 @@ public class ListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.sign_out:
-                setActiveUserPreference("");
+                removeActiveUserPreference();
                 startLoginActivity();
 
                 return true;
@@ -207,20 +209,28 @@ public class ListFragment extends Fragment {
 
     public String getActiveUserPreference() {
         SharedPreferences sharedPref = getActivity().getSharedPreferences(
-                getString(R.string.active_user_preference_key), Context.MODE_PRIVATE);
+                getString(R.string.active_user_preference_key), MODE_PRIVATE);
         if (sharedPref != null)
             return sharedPref.getString(getString(R.string.active_user_key), null);
         return null;
     }
 
-    public void setActiveUserPreference(String username) {
+    private void setActiveUserPreference(String username) {
         Context context = getActivity();
         String sharedPreferenceKey = getString(R.string.active_user_preference_key);
         SharedPreferences.Editor editor = context.getSharedPreferences(sharedPreferenceKey, MODE_PRIVATE).edit();
         if (editor != null) {
-            editor.putString("username", username);
+            editor.putString(null, username);
             editor.apply();
         }
+    }
+
+    private void removeActiveUserPreference() {
+        Context context = getActivity();
+        String sharedPreferenceKey = getString(R.string.active_user_preference_key);
+        SharedPreferences.Editor editor = context.getSharedPreferences(sharedPreferenceKey, MODE_PRIVATE).edit();
+        editor.clear();
+        editor.apply();
     }
 
     public void setListData(List<ListItem> listOfData) {

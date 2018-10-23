@@ -14,4 +14,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         transaction.replace(frameId, fragment, tag);
         transaction.commit();
     }
+    public static void addSteckedFragmentToActivity(FragmentManager fragmentManager,
+                                             Fragment fragment,
+                                             int frameId,
+                                             String tag) {
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(frameId, fragment, tag);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
 }

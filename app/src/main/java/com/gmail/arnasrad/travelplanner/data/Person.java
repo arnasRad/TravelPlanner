@@ -6,40 +6,45 @@ import android.support.annotation.NonNull;
 
 @Entity
 public class Person {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @NonNull
-    private String Id;
-    private String Name;
-    private String Surname;
+    private int Id;
+    private String name;
+    private String surname;
+    private String email;
 
-    public Person(@NonNull String id, String name, String surname) {
-        Id = id;
-        Name = name;
-        Surname = surname;
+    public Person(String name, String surname, String email) {
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
     }
 
     @NonNull
-    public String getId() {
+    public int getId() {
         return Id;
     }
 
-    public void setId(@NonNull String id) {
-        Id = id;
-    }
-
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public String getSurname() {
-        return Surname;
+        return surname;
     }
 
     public void setSurname(String surname) {
-        Surname = surname;
+        this.surname = surname;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

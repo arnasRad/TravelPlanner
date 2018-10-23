@@ -8,6 +8,10 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <permission
+        android:name="com.myapp.android.locationapi.maps.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature" />
 
     <application
         android:name=".RoomDemoApplication"
@@ -27,11 +31,16 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".detail.DetailActivity" />
+        <activity
+            android:name=".detail.DetailActivity"
+            android:noHistory="true"
+            />
         <activity android:name=".list.ListActivity" />
         <activity android:name=".create.CreateActivity" />
         <activity android:name=".login.LoginActivity" />
-        <activity android:name=".login.SignInActivity" />
+        <activity android:name=".login.SignInActivity"
+            android:noHistory="true"
+            />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

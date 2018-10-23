@@ -6,11 +6,12 @@
     android:layout_height="match_parent"
     tools:context="com.gmail.arnasrad.travelplanner.create.MapFragment">
 
+
     <fragment
         android:id="@+id/map"
-
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        class="com.google.android.gms.maps.SupportMapFragment" />
 
     <fragment
         android:id="@+id/place_autocomplete_fragment"

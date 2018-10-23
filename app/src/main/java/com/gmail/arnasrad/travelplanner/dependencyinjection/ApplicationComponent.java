@@ -24,6 +24,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import com.gmail.arnasrad.travelplanner.create.CreateFragment;
+import com.gmail.arnasrad.travelplanner.create.GoogleMapFragment;
 import com.gmail.arnasrad.travelplanner.create.MainCreateFragment;
 import com.gmail.arnasrad.travelplanner.create.MapFragment;
 import com.gmail.arnasrad.travelplanner.detail.DetailFragment;
@@ -39,7 +40,8 @@ public interface ApplicationComponent {
     void inject(ListFragment listFragment);
     void inject(MainCreateFragment mainCreateFragment);
     void inject(CreateFragment createFragment);
-    void inject(MapFragment mapFragment);
+    //void inject(MapFragment mapFragment);
+    void inject(GoogleMapFragment googleMapFragment);
     void inject(DetailFragment detailFragment);
     void inject(LoginFragment loginFragment);
     void inject(SignInFragment signInFragment);

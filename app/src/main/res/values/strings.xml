@@ -6,10 +6,26 @@
 
     <string name="menu_sign_out">Sign Out</string>
 
+    <string name="create_set_btn">Set</string>
+    <string name="create_edit_btn">Edit</string>
     <string name="create_add_btn">Add</string>
+    <string name="create_due_date_lbl">Due Date</string>
     <string name="create_main_destination_lbl">Main destination</string>
     <string name="create_locations_lbl">Locations</string>
     <string name="create_people_lbl">People</string>
+    <string name="location_permission_denied">This sample requires location permission to enable the \'my location\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'Google Maps API Demos\'.</string>
+    <string name="permission_required_toast">Location permission is required for this demo.</string>
+    <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>
+
+    <string name="person_name_surname">%1$s %2$s</string>
+
+    <string name="add_person_title">Add Person</string>
+    <string name="add_person_name_lbl">Name</string>
+    <string name="add_person_surname_lbl">Surname</string>
+    <string name="add_person_email_lbl">Email</string>
+    <string name="blank_person_name_error">Enter person name!</string>
+    <string name="blank_person_surname_error">Enter person name!</string>
+    <string name="blank_person_email_error">Enter person name!</string>
 
     <!-- used as tags for shared element transitions -->
     <string name="transitionDrawable">drawable</string>
