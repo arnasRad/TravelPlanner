@@ -31,9 +31,11 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -44,10 +46,6 @@ public class MainCreateFragment extends Fragment implements
         AddPersonFragment.AddPersonDialogListener,
         DatePickerDialog.OnDateSetListener{
     private static final String GOOGLE_MAP_FRAG = "GOOGLE_MAP_FRAG";
-
-    private static final String EXTRA_DEST_ID = "EXTRA_DEST_ID";
-    private static final String EXTRA_LOCATION_ID = "EXTRA_LOCATION_ID";
-    private static final String EXTRA_PERSON_ID = "EXTRA_PERSON_ID";
 
     PlacePicker.IntentBuilder builder;
     private int DESTINATION_PICKER_REQUEST = 1;
@@ -67,8 +65,9 @@ public class MainCreateFragment extends Fragment implements
     private RecyclerView locationRecyclerView;
     private RecyclerView personRecyclerView;
 
+    String currentDate;
     String dateFormatString;
-    SimpleDateFormat simpleDateFormat;
+    String altDateFormatString;
     Calendar dueDate;
 
     Button dueDateAddBtn;
@@ -103,6 +102,7 @@ public class MainCreateFragment extends Fragment implements
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_main_create, container, false);
         layoutInflater = getActivity().getLayoutInflater();
+        initDate();
         return v;
     }
 
@@ -123,9 +123,6 @@ public class MainCreateFragment extends Fragment implements
 
         initListData();
 
-        dueDate = Calendar.getInstance();
-        dateFormatString = "EEE, MMM d, ''yy";
-        simpleDateFormat = new SimpleDateFormat(dateFormatString);
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -188,11 +185,11 @@ public class MainCreateFragment extends Fragment implements
                 Place place = PlacePicker.getPlace(context, data);
 
                 if (destinationAdapter.getItemCount() == 0) {
-                    listOfDestination.add(new Location(place.getViewport(), place));
+                    listOfDestination.add(new Location(currentDate, place.getViewport(), place));
                     destinationAdapter.notifyItemInserted(listOfDestination.size());
                     mainDestinationAddBtn.setText(getResources().getString(R.string.create_edit_btn));
                 } else {
-                    listOfDestination.set(0, new Location(place.getViewport(), place));
+                    listOfDestination.set(0, new Location(currentDate, place.getViewport(), place));
                     destinationAdapter.notifyItemChanged(0);
                 }
 
@@ -206,7 +203,7 @@ public class MainCreateFragment extends Fragment implements
                 Context context = getContext();
                 Place place = PlacePicker.getPlace(context, data);
 
-                listOfLocation.add(new Location(place.getViewport(), place));
+                listOfLocation.add(new Location(currentDate, place.getViewport(), place));
                 locationAdapter.notifyItemInserted(listOfLocation.size());
 
                 String toastMsg = String.format("Added %s to locations list", place.getName());
@@ -262,6 +259,13 @@ public class MainCreateFragment extends Fragment implements
         personTouchHelper.attachToRecyclerView(personRecyclerView);
     }
 
+    private void initDate() {
+        dueDate = Calendar.getInstance();
+        dateFormatString = "EEE, MMM d, ''yy";
+        altDateFormatString = "yyyy/MM/dd/kk:mm:ss";
+        currentDate = getDate(altDateFormatString, dueDate);
+    }
+
     private void executeMapPicker(int request) {
         try {
             startActivityForResult(builder.build(getActivity()), request);
@@ -273,7 +277,7 @@ public class MainCreateFragment extends Fragment implements
     }
 
     private void updateDueDateLabel() {
-        dueDateTextView.setText(simpleDateFormat.format(dueDate.getTime()));
+        dueDateTextView.setText(getDate(dateFormatString, dueDate));
     }
 
 
@@ -294,7 +298,7 @@ public class MainCreateFragment extends Fragment implements
 
     @Override
     public void onFinishAddDialog(String name, String surname, String email) {
-        listOfPerson.add(new Person(name, surname, email));
+        listOfPerson.add(new Person(currentDate, name, surname, email));
         personAdapter.notifyItemInserted(listOfPerson.size());
 
         String toastMsg = String.format("%s %s is added to people list", name, surname);
@@ -540,5 +544,13 @@ public class MainCreateFragment extends Fragment implements
                 personAdapter.notifyItemRemoved(position);
             }
         };
+    }
+
+    public String getDate(String format, Calendar date) {
+        Date currentDate = date.getTime();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+
+        return dateFormat.format(currentDate);
     }
 }

@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.gmail.arnasrad.travelplanner.data.Account;
 import com.gmail.arnasrad.travelplanner.list.ListActivity;
 import com.gmail.arnasrad.travelplanner.login.LoginActivity;
+import com.gmail.arnasrad.travelplanner.util.ActiveAccSharedPreference;
 import com.gmail.arnasrad.travelplanner.viewmodel.AccountViewModel;
 import com.gmail.arnasrad.travelplanner.viewmodel.UsernameSearchTaskComplete;
 
@@ -26,7 +27,7 @@ public class MainEmptyActivity extends AppCompatActivity implements UsernameSear
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String activeUsername = getActiveUserPreference();
+        String activeUsername = ActiveAccSharedPreference.getActiveUserPreference(this);
         if (activeUsername == null)
             startLoginActivity();
         else
@@ -55,14 +56,6 @@ public class MainEmptyActivity extends AppCompatActivity implements UsernameSear
     private void startLoginActivity() {
         startActivity(new Intent(this, LoginActivity.class));
         finish();
-    }
-
-    public String getActiveUserPreference() {
-        SharedPreferences sharedPref = this.getSharedPreferences(
-                getString(R.string.active_user_preference_key), Context.MODE_PRIVATE);
-        if (sharedPref != null)
-            return sharedPref.getString(getString(R.string.active_user_key), null);
-        return null;
     }
 
     @Override

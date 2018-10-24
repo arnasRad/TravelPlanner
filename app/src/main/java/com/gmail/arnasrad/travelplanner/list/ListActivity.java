@@ -16,6 +16,7 @@ import com.gmail.arnasrad.travelplanner.R;
 import com.gmail.arnasrad.travelplanner.data.Account;
 import com.gmail.arnasrad.travelplanner.login.LoginActivity;
 import com.gmail.arnasrad.travelplanner.login.LoginFragment;
+import com.gmail.arnasrad.travelplanner.util.ActiveAccSharedPreference;
 import com.gmail.arnasrad.travelplanner.util.BaseActivity;
 import com.gmail.arnasrad.travelplanner.viewmodel.AccountViewModel;
 import com.gmail.arnasrad.travelplanner.viewmodel.UsernameSearchTaskComplete;
@@ -34,7 +35,7 @@ public class ListActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
-        if (getActiveUserPreference().equals(null))
+        if (ActiveAccSharedPreference.getActiveUserPreference(this).equals(null))
             startLoginFragment();
         else
             startListFragment();
@@ -48,14 +49,6 @@ public class ListActivity extends BaseActivity {
         a.addCategory(Intent.CATEGORY_HOME);
         a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(a);
-    }
-
-    public String getActiveUserPreference() {
-        SharedPreferences sharedPref = getSharedPreferences(
-                getString(R.string.active_user_preference_key), MODE_PRIVATE);
-        if (sharedPref != null)
-            return sharedPref.getString(getString(R.string.active_user_key), null);
-        return null;
     }
 
     private void startLoginFragment() {

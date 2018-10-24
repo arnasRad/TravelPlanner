@@ -11,18 +11,24 @@ import com.google.android.gms.maps.model.LatLngBounds;
 public class Location {
     @PrimaryKey(autoGenerate = true)
     @NonNull
-    private int Id;
+    private int id;
+    private String travelId;
     private LatLngBounds latLngBounds;
     private Place place;
 
-    public Location(LatLngBounds latLngBounds, Place place) {
+    public Location(String travelId, LatLngBounds latLngBounds, Place place) {
+        this.travelId = travelId;
         this.latLngBounds = latLngBounds;
         this.place = place;
     }
 
     @NonNull
     public int getId() {
-        return Id;
+        return id;
+    }
+
+    public String getTravelId() {
+        return travelId;
     }
 
     public LatLngBounds getLatLngBounds() {

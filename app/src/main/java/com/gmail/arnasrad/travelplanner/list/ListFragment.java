@@ -8,7 +8,6 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,7 +21,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.transition.Fade;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,7 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.gmail.arnasrad.travelplanner.R;
 import com.gmail.arnasrad.travelplanner.RoomDemoApplication;
@@ -40,6 +37,7 @@ import com.gmail.arnasrad.travelplanner.create.CreateActivity;
 import com.gmail.arnasrad.travelplanner.data.ListItem;
 import com.gmail.arnasrad.travelplanner.detail.DetailActivity;
 import com.gmail.arnasrad.travelplanner.login.LoginActivity;
+import com.gmail.arnasrad.travelplanner.util.ActiveAccSharedPreference;
 import com.gmail.arnasrad.travelplanner.viewmodel.ListItemCollectionViewModel;
 
 import java.util.List;
@@ -48,23 +46,16 @@ import javax.inject.Inject;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static android.content.Context.MODE_PRIVATE;
-import static android.support.constraint.Constraints.TAG;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ListFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class ListFragment extends Fragment {
-    private static final String EXTRA_ITEM_ID = "EXTRA_ITEM_ID";
 
 
-    private List<ListItem> listOfData;
+    private List<ListItem> listOfTravel;
 
     private LayoutInflater layoutInflater;
     private RecyclerView recyclerView;
-    private CustomAdapter adapter;
+    //private CustomAdapter adapter;
     private Toolbar toolbar;
 
     @Inject
@@ -102,9 +93,9 @@ public class ListFragment extends Fragment {
         listItemCollectionViewModel.getListItems().observe(this, new Observer<List<ListItem>>() {
             @Override
             public void onChanged(@Nullable List<ListItem> listItems) {
-                if (listOfData == null) {
-                    setListData(listItems);
-                }
+                //if (listOfData == null) {
+                //    setListData(listItems);
+                //}
             }
         });
 
@@ -122,7 +113,7 @@ public class ListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.sign_out:
-                removeActiveUserPreference();
+                ActiveAccSharedPreference.removeActiveUserPreference(getContext());
                 startLoginActivity();
 
                 return true;
@@ -180,7 +171,7 @@ public class ListFragment extends Fragment {
         startActivity(new Intent(getActivity(), CreateActivity.class));
     }
 
-
+/*
     public void startDetailActivity(String itemId, View viewRoot) {
         Activity container = getActivity();
         Intent i = new Intent(container, DetailActivity.class);
@@ -207,39 +198,14 @@ public class ListFragment extends Fragment {
         }
     }
 
-    public String getActiveUserPreference() {
-        SharedPreferences sharedPref = getActivity().getSharedPreferences(
-                getString(R.string.active_user_preference_key), MODE_PRIVATE);
-        if (sharedPref != null)
-            return sharedPref.getString(getString(R.string.active_user_key), null);
-        return null;
-    }
-
-    private void setActiveUserPreference(String username) {
-        Context context = getActivity();
-        String sharedPreferenceKey = getString(R.string.active_user_preference_key);
-        SharedPreferences.Editor editor = context.getSharedPreferences(sharedPreferenceKey, MODE_PRIVATE).edit();
-        if (editor != null) {
-            editor.putString(null, username);
-            editor.apply();
-        }
-    }
-
-    private void removeActiveUserPreference() {
-        Context context = getActivity();
-        String sharedPreferenceKey = getString(R.string.active_user_preference_key);
-        SharedPreferences.Editor editor = context.getSharedPreferences(sharedPreferenceKey, MODE_PRIVATE).edit();
-        editor.clear();
-        editor.apply();
-    }
-
+*/
     public void setListData(List<ListItem> listOfData) {
-        this.listOfData = listOfData;
+        //this.listOfData = listOfData;
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new CustomAdapter();
-        recyclerView.setAdapter(adapter);
+        //adapter = new CustomAdapter();
+        //recyclerView.setAdapter(adapter);
 
 
         DividerItemDecoration itemDecoration = new DividerItemDecoration(
@@ -258,14 +224,15 @@ public class ListFragment extends Fragment {
                 itemDecoration
         );
 
-
+/*
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
         itemTouchHelper.attachToRecyclerView(recyclerView);
+        */
     }
 
 
     /*-------------------- RecyclerView Boilerplate ----------------------*/
-
+/*
     private class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomViewHolder> {
 
         @NonNull
@@ -329,7 +296,8 @@ public class ListFragment extends Fragment {
         }
 
     }
-
+    */
+/*
     private ItemTouchHelper.Callback createHelperCallback() {
         return new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -349,6 +317,7 @@ public class ListFragment extends Fragment {
                 );
 
                 //ensure View is consistent with underlying data
+
                 listOfData.remove(position);
                 adapter.notifyItemRemoved(position);
 
@@ -356,4 +325,5 @@ public class ListFragment extends Fragment {
             }
         };
     }
+    */
 }

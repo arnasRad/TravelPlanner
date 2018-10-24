@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.gmail.arnasrad.travelplanner.R;
 import com.gmail.arnasrad.travelplanner.RoomDemoApplication;
@@ -89,7 +90,7 @@ public class SignInFragment extends Fragment implements AccountValidTaskCompl {
                 if (password.equals(rptPassword)) {
                     accountValidationViewModel.isAccInfoUsed(SignInFragment.this, v, username, password);
                 } else {
-                    showSnackbar(v, "Password is not repeated correctly");
+                    Toast.makeText(getContext(), "Password is not repeated correctly", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -160,13 +161,6 @@ public class SignInFragment extends Fragment implements AccountValidTaskCompl {
         }
     }
 
-    private void showSnackbar(View v, String text) {
-        Snackbar.make(v, text,
-                Snackbar.LENGTH_SHORT)
-                .setAction("Action", null)
-                .show();
-    }
-
     private void startLoginActivity() {
         startActivity(new Intent(getActivity(), LoginActivity.class));
     }
@@ -178,7 +172,7 @@ public class SignInFragment extends Fragment implements AccountValidTaskCompl {
             accountValidationViewModel.isPasswordUsed(SignInFragment.this, v, null,
                     username, password);
         } else {
-            showSnackbar(v, "Username already used");
+            Toast.makeText(getContext(), "Username already used", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -188,10 +182,11 @@ public class SignInFragment extends Fragment implements AccountValidTaskCompl {
         if (resultAcc == null) {
             newAccountViewModel.addNewAccountToDatabase(
                     new Account(username, password));
-            showSnackbar(v, "Location created successfully");
+            Toast.makeText(getContext(), "User account " + username + " created successfully",
+                    Toast.LENGTH_LONG).show();
 
             startLoginActivity();
         } else
-            showSnackbar(v, "Password is already used");
+            Toast.makeText(getContext(), "Password is already used", Toast.LENGTH_LONG).show();
     }
 }

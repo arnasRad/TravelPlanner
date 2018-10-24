@@ -43,7 +43,7 @@
     <string name="editTextPassword">Password</string>
     <string name="editTextRepeatPassword">Repeat Password</string>
 
-    <string name="active_user_preference_key">com.gmail.arnasrad.travelplanner.ACTIVE_ACCOUNT_PREFERENCE_KEY</string>
+    <string name="active_user_preference_name">com.gmail.arnasrad.travelplanner.ACTIVE_ACCOUNT_PREFERENCE_NAME</string>
     <string name="active_user_key">username</string>
 
     <!-- TODO: Remove or change this placeholder text -->

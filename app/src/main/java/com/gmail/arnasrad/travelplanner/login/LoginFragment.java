@@ -3,12 +3,9 @@ package com.gmail.arnasrad.travelplanner.login;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -17,19 +14,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.gmail.arnasrad.travelplanner.R;
 import com.gmail.arnasrad.travelplanner.RoomDemoApplication;
 import com.gmail.arnasrad.travelplanner.data.Account;
 import com.gmail.arnasrad.travelplanner.list.ListActivity;
+import com.gmail.arnasrad.travelplanner.util.ActiveAccSharedPreference;
 import com.gmail.arnasrad.travelplanner.viewmodel.AccountValidationViewModel;
 import com.gmail.arnasrad.travelplanner.viewmodel.AccountValidTaskCompl;
-import com.gmail.arnasrad.travelplanner.viewmodel.AccountViewModel;
-import com.gmail.arnasrad.travelplanner.viewmodel.UsernameSearchTaskComplete;
 
 import javax.inject.Inject;
 
-import static android.content.Context.MODE_PRIVATE;
 import static android.text.TextUtils.isEmpty;
 
 
@@ -159,13 +155,6 @@ public class LoginFragment extends Fragment implements AccountValidTaskCompl {
         }
     }
 
-    private void showSnackbar(View v, String text) {
-        Snackbar.make(v, text,
-                Snackbar.LENGTH_SHORT)
-                .setAction("Action", null)
-                .show();
-    }
-
     @Override
     public void onUserValidateTaskComplete(View v, Account resultAcc,
                                            String username, String password) {
@@ -173,7 +162,7 @@ public class LoginFragment extends Fragment implements AccountValidTaskCompl {
             accountValidationViewModel.isPasswordUsed(LoginFragment.this, v, resultAcc,
                     username, password);
         } else {
-            showSnackbar(v, "No such username exist");
+            Toast.makeText(getContext(), "No such username exist", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -181,22 +170,12 @@ public class LoginFragment extends Fragment implements AccountValidTaskCompl {
     public void onPswValidateTaskComplete(View v, Account resultAcc,
                                           String username, String password) {
         if (resultAcc != null) {
-            setActiveUserPreference(username);
+            ActiveAccSharedPreference.setActiveUserPreference(getContext(), username);
 
-            showSnackbar(v, "Login successful");
+            Toast.makeText(getContext(), "Login successful", Toast.LENGTH_LONG).show();
 
             startListActivity();
         } else
-            showSnackbar(v, "Incorrect password");
-    }
-
-    public void setActiveUserPreference(String username) {
-        Context context = getActivity();
-        String sharedPreferenceKey = getString(R.string.active_user_preference_key);
-        SharedPreferences.Editor editor = context.getSharedPreferences(sharedPreferenceKey, MODE_PRIVATE).edit();
-        if (editor != null) {
-            editor.putString("username", username);
-            editor.apply();
-        }
+            Toast.makeText(getContext(),  "Incorrect password", Toast.LENGTH_LONG).show();
     }
 }

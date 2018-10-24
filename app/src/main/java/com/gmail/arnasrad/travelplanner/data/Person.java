@@ -9,11 +9,13 @@ public class Person {
     @PrimaryKey(autoGenerate = true)
     @NonNull
     private int Id;
+    private String travelId;
     private String name;
     private String surname;
     private String email;
 
-    public Person(String name, String surname, String email) {
+    public Person(String travelId, String name, String surname, String email) {
+        this.travelId = travelId;
         this.name = name;
         this.surname = surname;
         this.email = email;
@@ -22,6 +24,10 @@ public class Person {
     @NonNull
     public int getId() {
         return Id;
+    }
+
+    public String getTravelId() {
+        return travelId;
     }
 
     public String getName() {

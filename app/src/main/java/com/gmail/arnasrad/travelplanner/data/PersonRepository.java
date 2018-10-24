@@ -1,44 +1,36 @@
 package com.gmail.arnasrad.travelplanner.data;
 
+import android.arch.lifecycle.LiveData;
+
 import java.util.List;
 
 import javax.inject.Inject;
 
 public class PersonRepository {
-    /*
-    private final AccountDao accountDao;
+    private final PersonDao personDao;
 
     @Inject
-    public PersonRepository(AccountDao accountDao) {
-        this.accountDao = accountDao;
+    public PersonRepository (PersonDao personDao) {
+        this.personDao = personDao;
     }
 
-    public List<Account> getListOfAccounts() {
-        return accountDao.getAccounts();
+    public LiveData<List<Person>> getPersonList(String travelId) {
+        return personDao.getPersonList(travelId);
     }
 
-    public Account getAccount(String username) {
-        return accountDao.getAccountByUsername(username);
+    public LiveData<Person> getPerson(int id) {
+        return personDao.getPersonById(id);
     }
 
-    public int getUsernameCount(String username) {
-        return accountDao.getUsernameCount(username);
+    public Long insertPerson(Person person) {
+        return personDao.insertPerson(person);
     }
 
-    public int getPasswordCount(String password) {
-        return accountDao.getPasswordCount(password);
+    public void updatePerson(int id, String name, String surname, String email) {
+        personDao.updatePerson(id, name, surname, email);
     }
 
-    public void deleteAccount(Account account) {
-        accountDao.deleteAccount(account);
+    public void deletePerson(Person person) {
+        personDao.deletePerson(person);
     }
-
-    public Long insertAccount(Account account) {
-        return accountDao.insertAccount(account);
-    }
-
-    void setActiveAccount(String username, boolean isActive) {
-        accountDao.setActiveAccount(username, isActive);
-    }
-    */
 }
