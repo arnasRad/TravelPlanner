@@ -3,6 +3,7 @@ package com.gmail.arnasrad.travelplanner.data;
 import android.arch.lifecycle.LiveData;
 
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.List;
@@ -30,7 +31,9 @@ public class LocationRepository {
     }
 
     public void updateLocation(int id, LatLngBounds latLngBounds, Place place) {
-        locationDao.updateLocation(id, latLngBounds, place);
+        LatLng tempLatLng = latLngBounds.getCenter();
+        locationDao.updateLocation(id, tempLatLng.latitude, tempLatLng.longitude,
+                place.getName().toString(), place.getAddress().toString(), place.getId());
     }
 
     public void deleteLocation(Location location) {

@@ -64,7 +64,7 @@
             android:background="?android:attr/listDivider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/create_main_destination_rw" />
+            app:layout_constraintTop_toBottomOf="@+id/detail_main_destination_rw" />
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/main_destination_layout"
@@ -118,7 +118,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/create_main_destination_rw">
+            app:layout_constraintTop_toBottomOf="@+id/detail_main_destination_rw">
 
             <TextView
                 android:id="@+id/locations_lbl"
@@ -158,7 +158,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/create_locations_rw"
+            app:layout_constraintTop_toBottomOf="@+id/detail_locations_rw"
             tools:layout_editor_absoluteY="522dp">
 
             <View
@@ -210,7 +210,7 @@
         </android.support.constraint.ConstraintLayout>
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/create_locations_rw"
+            android:id="@+id/detail_locations_rw"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
@@ -229,7 +229,7 @@
             app:layout_constraintTop_toBottomOf="@+id/people_layout" />
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/create_main_destination_rw"
+            android:id="@+id/detail_main_destination_rw"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"

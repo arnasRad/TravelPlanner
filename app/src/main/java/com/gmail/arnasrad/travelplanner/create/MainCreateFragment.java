@@ -1,6 +1,8 @@
 package com.gmail.arnasrad.travelplanner.create;
 
 import android.app.DatePickerDialog;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,20 +28,28 @@ import com.gmail.arnasrad.travelplanner.R;
 import com.gmail.arnasrad.travelplanner.RoomDemoApplication;
 import com.gmail.arnasrad.travelplanner.data.Location;
 import com.gmail.arnasrad.travelplanner.data.Person;
+import com.gmail.arnasrad.travelplanner.data.Travel;
+import com.gmail.arnasrad.travelplanner.list.ListActivity;
+import com.gmail.arnasrad.travelplanner.util.ActiveAccSharedPreference;
+import com.gmail.arnasrad.travelplanner.viewmodel.NewLocationViewModel;
+import com.gmail.arnasrad.travelplanner.viewmodel.NewPersonViewModel;
+import com.gmail.arnasrad.travelplanner.viewmodel.NewTravelViewModel;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
+
+import javax.inject.Inject;
 
 import static android.app.Activity.RESULT_OK;
-import static com.gmail.arnasrad.travelplanner.util.BaseActivity.addSteckedFragmentToActivity;
+import static com.gmail.arnasrad.travelplanner.util.BaseActivity.addStackedFragmentToActivity;
 
 
 public class MainCreateFragment extends Fragment implements
@@ -50,7 +60,7 @@ public class MainCreateFragment extends Fragment implements
     PlacePicker.IntentBuilder builder;
     private int DESTINATION_PICKER_REQUEST = 1;
     private int LOCATION_PICKER_REQUEST = 2;
-    private int ADD_PERSON_REQUEST = 3;
+    private int ADD_PERSON_REQUEST = 90009;
 
     DestinationAdapter destinationAdapter;
     LocationAdapter locationAdapter;
@@ -76,6 +86,13 @@ public class MainCreateFragment extends Fragment implements
     Button peopleAddBtn;
 
     private LayoutInflater layoutInflater;
+
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
+
+    NewLocationViewModel newLocationViewModel;
+    NewPersonViewModel newPersonViewModel;
+    NewTravelViewModel newTravelViewModel;
 
     public MainCreateFragment() {
         // Required empty public constructor
@@ -117,8 +134,8 @@ public class MainCreateFragment extends Fragment implements
         peopleAddBtn = v.findViewById(R.id.button_add_person);
 
         dueDateTextView = v.findViewById(R.id.due_date_lbl);
-        mainDestinationRecyclerView = v.findViewById(R.id.create_main_destination_rw);
-        locationRecyclerView = v.findViewById(R.id.create_locations_rw);
+        mainDestinationRecyclerView = v.findViewById(R.id.detail_main_destination_rw);
+        locationRecyclerView = v.findViewById(R.id.detail_locations_rw);
         personRecyclerView = v.findViewById(R.id.create_people_rw);
 
         initListData();
@@ -164,7 +181,7 @@ public class MainCreateFragment extends Fragment implements
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                AddPersonFragment addPersonFragment = new AddPersonFragment();
+                AddPersonFragment addPersonFragment = AddPersonFragment.newInstance();
                 addPersonFragment.setTargetFragment(MainCreateFragment.this, ADD_PERSON_REQUEST);
                 addPersonFragment.show(fragmentManager, "Add Person");
             }
@@ -175,6 +192,13 @@ public class MainCreateFragment extends Fragment implements
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        //Set up and subscribe (observe) to the ViewModel
+        newLocationViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(NewLocationViewModel.class);
+        newPersonViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(NewPersonViewModel.class);
+        newTravelViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(NewTravelViewModel.class);
     }
 
     @Override
@@ -185,11 +209,11 @@ public class MainCreateFragment extends Fragment implements
                 Place place = PlacePicker.getPlace(context, data);
 
                 if (destinationAdapter.getItemCount() == 0) {
-                    listOfDestination.add(new Location(currentDate, place.getViewport(), place));
+                    listOfDestination.add(new Location(currentDate, place.getViewport(), place, true));
                     destinationAdapter.notifyItemInserted(listOfDestination.size());
                     mainDestinationAddBtn.setText(getResources().getString(R.string.create_edit_btn));
                 } else {
-                    listOfDestination.set(0, new Location(currentDate, place.getViewport(), place));
+                    listOfDestination.set(0, new Location(currentDate, place.getViewport(), place, true));
                     destinationAdapter.notifyItemChanged(0);
                 }
 
@@ -203,7 +227,7 @@ public class MainCreateFragment extends Fragment implements
                 Context context = getContext();
                 Place place = PlacePicker.getPlace(context, data);
 
-                listOfLocation.add(new Location(currentDate, place.getViewport(), place));
+                listOfLocation.add(new Location(currentDate, place.getViewport(), place, false));
                 locationAdapter.notifyItemInserted(listOfLocation.size());
 
                 String toastMsg = String.format("Added %s to locations list", place.getName());
@@ -225,7 +249,24 @@ public class MainCreateFragment extends Fragment implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.done:
+                for (Location location: listOfLocation) {
+                    newLocationViewModel.addNewLocationToDatabase(location);
+                }
 
+                Location tempMainDestination = listOfDestination.get(0);
+                newLocationViewModel.addNewLocationToDatabase(tempMainDestination);
+
+                for(Person person: listOfPerson) {
+                    newPersonViewModel.addNewPersonToDatabase(person);
+                }
+
+                newTravelViewModel.addNewTravelToDatabase(new Travel(currentDate,
+                        ActiveAccSharedPreference.getActiveUserPreference(getContext()),
+                        tempMainDestination.getPlaceName(), getDate(dateFormatString, dueDate),
+                        getRandomDrawableResource()));
+                Toast.makeText(getContext(), "New travel plan has been created successfully", Toast.LENGTH_LONG).show();
+
+                startListActivity();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -251,8 +292,8 @@ public class MainCreateFragment extends Fragment implements
         locationRecyclerView.setAdapter(locationAdapter);
         personRecyclerView.setAdapter(personAdapter);
 
-        ItemTouchHelper destinatinTouchHelper = new ItemTouchHelper(createDestinationHelperCallback());
-        destinatinTouchHelper.attachToRecyclerView(mainDestinationRecyclerView);
+        ItemTouchHelper destinationTouchHelper = new ItemTouchHelper(createDestinationHelperCallback());
+        destinationTouchHelper.attachToRecyclerView(mainDestinationRecyclerView);
         ItemTouchHelper locationTouchHelper = new ItemTouchHelper(createLocationHelperCallback());
         locationTouchHelper.attachToRecyclerView(locationRecyclerView);
         ItemTouchHelper personTouchHelper = new ItemTouchHelper(createPersonHelperCallback());
@@ -280,6 +321,26 @@ public class MainCreateFragment extends Fragment implements
         dueDateTextView.setText(getDate(dateFormatString, dueDate));
     }
 
+    public int getRandomDrawableResource (){
+        int min = 0;
+        int max = 4;
+
+        Random rand = new Random();
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+        switch (randomNum){
+            case 0:
+                return R.drawable.red_drawable;
+            case 1:
+                return R.drawable.blue_drawable;
+            case 2:
+                return R.drawable.green_drawable;
+            case 3:
+                return R.drawable.yellow_drawable;
+            default:
+                return 0;
+        }
+    }
+
 
     private void startGoogleMapFragment() {
         FragmentManager manager = getActivity().getSupportFragmentManager();
@@ -289,11 +350,15 @@ public class MainCreateFragment extends Fragment implements
             mapFragment = GoogleMapFragment.newInstance();
         }
 
-        addSteckedFragmentToActivity(manager,
+        addStackedFragmentToActivity(manager,
                 mapFragment,
                 R.id.rootActivityCreate,
                 GOOGLE_MAP_FRAG
         );
+    }
+
+    private void startListActivity() {
+        startActivity(new Intent(getActivity(), ListActivity.class));
     }
 
     @Override
@@ -331,8 +396,8 @@ public class MainCreateFragment extends Fragment implements
         public void onBindViewHolder(@NonNull DestinationAdapter.DestinationViewHolder holder, int position) {
             Location currentItem = listOfDestination.get(position);
 
-            holder.destinationName.setText(currentItem.getPlace().getName());
-            holder.destinationAddress.setText(currentItem.getPlace().getAddress());
+            holder.destinationName.setText(currentItem.getPlaceName());
+            holder.destinationAddress.setText(currentItem.getPlaceAddress());
         }
 
         @Override
@@ -383,8 +448,8 @@ public class MainCreateFragment extends Fragment implements
         public void onBindViewHolder(@NonNull LocationAdapter.LocationViewHolder holder, int position) {
             Location currentItem = listOfLocation.get(position);
 
-            holder.locationName.setText(currentItem.getPlace().getName());
-            holder.locationAddress.setText(currentItem.getPlace().getAddress());
+            holder.locationName.setText(currentItem.getPlaceName());
+            holder.locationAddress.setText(currentItem.getPlaceAddress());
         }
 
         @Override

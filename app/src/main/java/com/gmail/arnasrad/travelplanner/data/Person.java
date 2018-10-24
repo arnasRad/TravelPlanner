@@ -26,6 +26,10 @@ public class Person {
         return Id;
     }
 
+    public void setId(@NonNull int id) {
+        Id = id;
+    }
+
     public String getTravelId() {
         return travelId;
     }

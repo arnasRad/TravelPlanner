@@ -35,10 +35,13 @@ import com.gmail.arnasrad.travelplanner.R;
 import com.gmail.arnasrad.travelplanner.RoomDemoApplication;
 import com.gmail.arnasrad.travelplanner.create.CreateActivity;
 import com.gmail.arnasrad.travelplanner.data.ListItem;
+import com.gmail.arnasrad.travelplanner.data.Travel;
 import com.gmail.arnasrad.travelplanner.detail.DetailActivity;
+import com.gmail.arnasrad.travelplanner.detail.TravelDetail;
 import com.gmail.arnasrad.travelplanner.login.LoginActivity;
 import com.gmail.arnasrad.travelplanner.util.ActiveAccSharedPreference;
 import com.gmail.arnasrad.travelplanner.viewmodel.ListItemCollectionViewModel;
+import com.gmail.arnasrad.travelplanner.viewmodel.TravelCollectionViewModel;
 
 import java.util.List;
 
@@ -51,17 +54,18 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ListFragment extends Fragment {
 
 
-    private List<ListItem> listOfTravel;
+    private List<Travel> listOfTravel;
 
+    private String currentUsername;
     private LayoutInflater layoutInflater;
     private RecyclerView recyclerView;
-    //private CustomAdapter adapter;
-    private Toolbar toolbar;
+    private CustomAdapter adapter;
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
 
     ListItemCollectionViewModel listItemCollectionViewModel;
+    TravelCollectionViewModel travelCollectionViewModel;
 
     public ListFragment() {
     }
@@ -77,6 +81,7 @@ public class ListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
+        currentUsername = ActiveAccSharedPreference.getActiveUserPreference(getContext());
 
         ((RoomDemoApplication) getActivity().getApplication())
                 .getApplicationComponent()
@@ -86,6 +91,18 @@ public class ListFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        travelCollectionViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(TravelCollectionViewModel.class);
+        travelCollectionViewModel.getTravels(currentUsername).observe(this, new Observer<List<Travel>>() {
+            @Override
+            public void onChanged(@Nullable List<Travel> travels) {
+                if (listOfTravel == null) {
+                    setTravelData(travels);
+                }
+            }
+        });
+
+        /*
         //Set up and subscribe (observe) to the ViewModel
         listItemCollectionViewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(ListItemCollectionViewModel.class);
@@ -98,7 +115,7 @@ public class ListFragment extends Fragment {
                 //}
             }
         });
-
+*/
     }
 
     /*------------------------------- Menu -------------------------------*/
@@ -171,6 +188,14 @@ public class ListFragment extends Fragment {
         startActivity(new Intent(getActivity(), CreateActivity.class));
     }
 
+    private void startDetailActivity(String travelId) {
+        Bundle bundle = new Bundle();
+        bundle.putString("travelId", travelId);
+// set Fragmentclass Arguments
+        TravelDetail travelDetail = new TravelDetail();
+        travelDetail.setArguments(bundle);
+    }
+
 /*
     public void startDetailActivity(String itemId, View viewRoot) {
         Activity container = getActivity();
@@ -224,6 +249,38 @@ public class ListFragment extends Fragment {
                 itemDecoration
         );
 
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
+    }
+
+
+    public void setTravelData(List<Travel> listOfTravel) {
+        this.listOfTravel = listOfTravel;
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new CustomAdapter();
+        recyclerView.setAdapter(adapter);
+
+
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(
+                recyclerView.getContext(),
+                layoutManager.getOrientation()
+        );
+
+        itemDecoration.setDrawable(
+                ContextCompat.getDrawable(
+                        getActivity(),
+                        R.drawable.divider_gray
+                )
+        );
+
+        recyclerView.addItemDecoration(
+                itemDecoration
+        );
+
 /*
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
         itemTouchHelper.attachToRecyclerView(recyclerView);
@@ -232,7 +289,7 @@ public class ListFragment extends Fragment {
 
 
     /*-------------------- RecyclerView Boilerplate ----------------------*/
-/*
+
     private class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomViewHolder> {
 
         @NonNull
@@ -244,17 +301,16 @@ public class ListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull CustomAdapter.CustomViewHolder holder, int position) {
-            ListItem currentItem = listOfData.get(position);
+            Travel currentItem = listOfTravel.get(position);
 
             holder.coloredCircle.setImageResource(currentItem.getColorResource());
 
-
             holder.message.setText(
-                    currentItem.getMessage()
+                    currentItem.getMainDestination()
             );
 
             holder.dateAndTime.setText(
-                    currentItem.getItemId()
+                    currentItem.getDueDate()
             );
 
             holder.loading.setVisibility(View.INVISIBLE);
@@ -262,7 +318,7 @@ public class ListFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return listOfData.size();
+            return listOfTravel.size();
         }
 
         class CustomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -287,17 +343,17 @@ public class ListFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                ListItem listItem = listOfData.get(
+                Travel travel = listOfTravel.get(
                         this.getAdapterPosition()
                 );
 
-                startDetailActivity(listItem.getItemId(), v);
+                startDetailActivity(travel.getId());
             }
         }
 
     }
-    */
-/*
+
+
     private ItemTouchHelper.Callback createHelperCallback() {
         return new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -312,18 +368,18 @@ public class ListFragment extends Fragment {
             @Override
             public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int position = viewHolder.getAdapterPosition();
-                listItemCollectionViewModel.deleteListItem(
-                        listOfData.get(position)
+                travelCollectionViewModel.deleteTravel(
+                        listOfTravel.get(position)
                 );
 
                 //ensure View is consistent with underlying data
 
-                listOfData.remove(position);
+                listOfTravel.remove(position);
                 adapter.notifyItemRemoved(position);
 
 
             }
         };
     }
-    */
+
 }

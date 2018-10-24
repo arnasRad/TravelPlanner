@@ -23,8 +23,8 @@ public interface LocationDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Long insertLocation(Location location);
 
-    @Query("UPDATE Location SET latLngBounds = :latLngBounds, place = :place WHERE id = :id")
-    void updateLocation(int id, LatLngBounds latLngBounds, Place place);
+    @Query("UPDATE Location SET latitude = :latitude, longitude = :longitude, placeName = :placeName, placeAddress = :placeAddress, placeId = :placeId WHERE id = :id")
+    void updateLocation(int id, double latitude, double longitude, String placeName, String placeAddress, String placeId);
 
     @Delete
     void deleteLocation(Location location);

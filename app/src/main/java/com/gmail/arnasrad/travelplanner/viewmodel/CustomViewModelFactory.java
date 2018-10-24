@@ -6,14 +6,28 @@ import android.support.annotation.NonNull;
 
 import com.gmail.arnasrad.travelplanner.data.AccountRepository;
 import com.gmail.arnasrad.travelplanner.data.ListItemRepository;
+import com.gmail.arnasrad.travelplanner.data.LocationRepository;
+import com.gmail.arnasrad.travelplanner.data.PersonRepository;
+import com.gmail.arnasrad.travelplanner.data.Travel;
+import com.gmail.arnasrad.travelplanner.data.TravelRepository;
 
 public class CustomViewModelFactory implements ViewModelProvider.Factory {
     private final ListItemRepository listItemRepository;
     private final AccountRepository accountRepository;
+    private final LocationRepository locationRepository;
+    private final PersonRepository personRepository;
+    private final TravelRepository travelRepository;
 
-    public CustomViewModelFactory(ListItemRepository listItemRepository, AccountRepository accountRepository) {
+    public CustomViewModelFactory(ListItemRepository listItemRepository,
+                                  AccountRepository accountRepository,
+                                  LocationRepository locationRepository,
+                                  PersonRepository personRepository,
+                                  TravelRepository travelRepository) {
         this.listItemRepository = listItemRepository;
         this.accountRepository = accountRepository;
+        this.locationRepository = locationRepository;
+        this.personRepository = personRepository;
+        this.travelRepository = travelRepository;
     }
 
     @NonNull
@@ -31,6 +45,14 @@ public class CustomViewModelFactory implements ViewModelProvider.Factory {
             return (T) new NewAccountViewModel(accountRepository);
         } else if (modelClass.isAssignableFrom(AccountViewModel.class)) {
             return (T) new AccountViewModel(accountRepository);
+        } else if (modelClass.isAssignableFrom(NewLocationViewModel.class)) {
+            return (T) new NewLocationViewModel(locationRepository);
+        } else if (modelClass.isAssignableFrom(NewPersonViewModel.class)) {
+            return (T) new NewPersonViewModel(personRepository);
+        } else if (modelClass.isAssignableFrom(NewTravelViewModel.class)) {
+            return (T) new NewTravelViewModel(travelRepository);
+        } else if (modelClass.isAssignableFrom(TravelCollectionViewModel.class)) {
+            return (T) new TravelCollectionViewModel(travelRepository);
         } else {
             throw new IllegalArgumentException("ViewModel Not Found");
         }

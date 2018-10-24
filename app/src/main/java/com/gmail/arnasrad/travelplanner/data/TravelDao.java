@@ -16,13 +16,13 @@ public interface TravelDao {
     LiveData<List<Travel>> getTravelList(String username);
 
     @Query("SELECT * FROM Travel WHERE id = :id")
-    LiveData<Travel> getTraveById(String id);
+    LiveData<Travel> getTravelById(String id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Long insertTravel(Travel travel);
 
     @Query("UPDATE Travel SET mainDestination = :mainDestination, dueDate = :dueDate WHERE id = :id")
-    void updateTravel(String id, String mainDestination, Calendar dueDate);
+    void updateTravel(String id, String mainDestination, String dueDate);
 
     @Delete
     void deleteTravel(Travel travel);

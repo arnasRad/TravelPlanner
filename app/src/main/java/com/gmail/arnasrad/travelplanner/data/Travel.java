@@ -8,25 +8,36 @@ import java.util.Calendar;
 
 @Entity
 public class Travel {
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey()
     @NonNull
-    private String Id;
-    private int username;
+    private String id;
+    private String username;
     private String mainDestination;
-    private Calendar dueDate;
+    private String dueDate;
+    private int colorResource;
 
-    public Travel(int username, String mainDestination, Calendar dueDate) {
+    public Travel(String id, String username, String mainDestination, String dueDate, int colorResource) {
+        this.id = id;
         this.username = username;
         this.mainDestination = mainDestination;
         this.dueDate = dueDate;
+        this.colorResource = colorResource;
     }
 
     @NonNull
     public String getId() {
-        return Id;
+        return id;
     }
 
-    public int getUsername() {
+    public void setId(@NonNull String id) {
+        this.id = id;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getUsername() {
         return username;
     }
 
@@ -38,11 +49,19 @@ public class Travel {
         this.mainDestination = mainDestination;
     }
 
-    public Calendar getDueDate() {
+    public String getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(Calendar dueDate) {
+    public void setDueDate(String dueDate) {
         this.dueDate = dueDate;
+    }
+
+    public int getColorResource() {
+        return colorResource;
+    }
+
+    public void setColorResource(int colorResource) {
+        this.colorResource = colorResource;
     }
 }

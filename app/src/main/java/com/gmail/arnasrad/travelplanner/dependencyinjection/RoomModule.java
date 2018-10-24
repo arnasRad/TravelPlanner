@@ -30,8 +30,14 @@ import dagger.Provides;
 import com.gmail.arnasrad.travelplanner.data.AccountDao;
 import com.gmail.arnasrad.travelplanner.data.AccountRepository;
 import com.gmail.arnasrad.travelplanner.data.ListItemDao;
+import com.gmail.arnasrad.travelplanner.data.LocationDao;
+import com.gmail.arnasrad.travelplanner.data.LocationRepository;
+import com.gmail.arnasrad.travelplanner.data.PersonDao;
+import com.gmail.arnasrad.travelplanner.data.PersonRepository;
+import com.gmail.arnasrad.travelplanner.data.TravelDao;
 import com.gmail.arnasrad.travelplanner.data.TravelPlannerDatabase;
 import com.gmail.arnasrad.travelplanner.data.ListItemRepository;
+import com.gmail.arnasrad.travelplanner.data.TravelRepository;
 import com.gmail.arnasrad.travelplanner.viewmodel.CustomViewModelFactory;
 
 @Module
@@ -67,13 +73,37 @@ public class RoomModule {
 
     @Provides
     @Singleton
+    LocationDao provideLocationDao(TravelPlannerDatabase database){
+        return database.locationDao();
+    }
+
+    @Provides
+    @Singleton
+    PersonDao providePersonDao(TravelPlannerDatabase database){
+        return database.personDao();
+    }
+
+    @Provides
+    @Singleton
+    TravelDao provideTravelDao(TravelPlannerDatabase database){
+        return database.travelDao();
+    }
+
+    @Provides
+    @Singleton
     TravelPlannerDatabase provideListItemDatabase(Application application){
         return database;
     }
 
     @Provides
     @Singleton
-    ViewModelProvider.Factory provideViewModelFactory(ListItemRepository listItemRepository, AccountRepository accountRepository){
-        return new CustomViewModelFactory(listItemRepository, accountRepository);
+    ViewModelProvider.Factory provideViewModelFactory(ListItemRepository listItemRepository,
+                                                      AccountRepository accountRepository,
+                                                      LocationRepository locationRepository,
+                                                      PersonRepository personRepository,
+                                                      TravelRepository travelRepository){
+        return new CustomViewModelFactory(listItemRepository, accountRepository,
+                                            locationRepository, personRepository,
+                                            travelRepository);
     }
 }

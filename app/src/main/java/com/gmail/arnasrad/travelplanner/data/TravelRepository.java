@@ -20,14 +20,14 @@ public class TravelRepository {
     }
 
     public LiveData<Travel> getTravel(String id) {
-        return travelDao.getTraveById(id);
+        return travelDao.getTravelById(id);
     }
 
     public Long insertTravel(Travel travel) {
         return travelDao.insertTravel(travel);
     }
 
-    public void updateTravel(String id, String mainDestination, Calendar dueDate) {
+    public void updateTravel(String id, String mainDestination, String dueDate) {
         travelDao.updateTravel(id, mainDestination, dueDate);
     }
 
