@@ -1,10 +1,18 @@
 package com.gmail.arnasrad.travelplanner.detail;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
@@ -13,16 +21,22 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.gmail.arnasrad.travelplanner.R;
+import com.gmail.arnasrad.travelplanner.RoomDemoApplication;
 import com.gmail.arnasrad.travelplanner.data.Location;
 import com.gmail.arnasrad.travelplanner.data.Person;
+import com.gmail.arnasrad.travelplanner.viewmodel.LocationCollectionViewModel;
+import com.gmail.arnasrad.travelplanner.viewmodel.PersonCollectionViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class TravelDetail extends Fragment {
     private String travelId;
+    private String dueDate;
 
     private LayoutInflater layoutInflater;
 
@@ -30,9 +44,20 @@ public class TravelDetail extends Fragment {
     private List<Location> listOfLocation;
     private List<Person> listOfPerson;
 
-    DestinationAdapter destinationAdapter;
-    LocationAdapter locationAdapter;
-    PersonAdapter personAdapter;
+    private DestinationAdapter destinationAdapter;
+    private LocationAdapter locationAdapter;
+    private PersonAdapter personAdapter;
+
+    private TextView dueDateTextView;
+    private RecyclerView mainDestinationRecyclerView;
+    private RecyclerView locationRecyclerView;
+    private RecyclerView personRecyclerView;
+
+    PersonCollectionViewModel personCollectionViewModel;
+    LocationCollectionViewModel locationCollectionViewModel;
+
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
 
     public TravelDetail() {
         // Required empty public constructor
@@ -45,6 +70,10 @@ public class TravelDetail extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ((RoomDemoApplication) getActivity().getApplication())
+                .getApplicationComponent()
+                .inject(this);
     }
 
     @Override
@@ -54,9 +83,60 @@ public class TravelDetail extends Fragment {
         View v = inflater.inflate(R.layout.fragment_travel_detail, container, false);
 
         travelId = getArguments().getString("travelId");
+        dueDate = getArguments().getString("dueDate");
         layoutInflater = getActivity().getLayoutInflater();
 
+
         return v;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        dueDateTextView = view.findViewById(R.id.detail_due_date);
+        mainDestinationRecyclerView = view.findViewById(R.id.detail_main_destination_rw);
+        locationRecyclerView = view.findViewById(R.id.detail_locations_rw);
+        personRecyclerView = view.findViewById(R.id.detail_people_rw);
+    }
+
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        dueDateTextView.setText(dueDate);
+
+        //Set up and subscribe (observe) to the ViewModel
+        personCollectionViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(PersonCollectionViewModel.class);
+        locationCollectionViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(LocationCollectionViewModel.class);
+
+        personCollectionViewModel.getPersonList(travelId).observe(this, new Observer<List<Person>>() {
+            @Override
+            public void onChanged(@Nullable List<Person> people) {
+                if (listOfPerson == null) {
+                    setPersonData(people);
+                }
+            }
+        });
+
+        locationCollectionViewModel.getLocationList(travelId).observe(this, new Observer<List<Location>>() {
+            @Override
+            public void onChanged(@Nullable List<Location> locations) {
+                if (listOfLocation == null) {
+                    setLocationData(locations);
+                }
+            }
+        });
+
+        locationCollectionViewModel.getDestinationList(travelId).observe(this, new Observer<List<Location>>() {
+            @Override
+            public void onChanged(@Nullable List<Location> locations) {
+                if (listOfDestination == null) {
+                    setDestinationData(locations);
+                }
+            }
+        });
     }
 
     @Override
@@ -69,6 +149,34 @@ public class TravelDetail extends Fragment {
         super.onDetach();
     }
 
+
+    public void setPersonData(List<Person> listOfPerson) {
+        this.listOfPerson = listOfPerson;
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        personRecyclerView.setLayoutManager(layoutManager);
+        personAdapter = new PersonAdapter();
+        personRecyclerView.setAdapter(personAdapter);
+    }
+
+    public void setLocationData(List<Location> listOfLocation) {
+        this.listOfLocation = listOfLocation;
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        locationRecyclerView.setLayoutManager(layoutManager);
+        locationAdapter = new LocationAdapter();
+        locationRecyclerView.setAdapter(locationAdapter);
+    }
+
+    public void setDestinationData(List<Location> listOfDestination) {
+        this.listOfDestination = listOfDestination;
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        mainDestinationRecyclerView.setLayoutManager(layoutManager);
+        destinationAdapter = new DestinationAdapter();
+        mainDestinationRecyclerView.setAdapter(destinationAdapter);
+
+    }
 
     private class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.DestinationViewHolder> {
         @NonNull
@@ -277,8 +385,6 @@ public class TravelDetail extends Fragment {
     private ItemTouchHelper.Callback createPersonHelperCallback() {
         return new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-
-
             //not used, as the first parameter above is 0
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView1, @NonNull RecyclerView.ViewHolder viewHolder,

@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,6 +29,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -40,6 +42,7 @@ import com.gmail.arnasrad.travelplanner.detail.DetailActivity;
 import com.gmail.arnasrad.travelplanner.detail.TravelDetail;
 import com.gmail.arnasrad.travelplanner.login.LoginActivity;
 import com.gmail.arnasrad.travelplanner.util.ActiveAccSharedPreference;
+import com.gmail.arnasrad.travelplanner.util.BaseActivity;
 import com.gmail.arnasrad.travelplanner.viewmodel.ListItemCollectionViewModel;
 import com.gmail.arnasrad.travelplanner.viewmodel.TravelCollectionViewModel;
 
@@ -52,6 +55,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class ListFragment extends Fragment {
+    private static final String DETAIL_FRAG = "DETAIL_FRAG";
 
 
     private List<Travel> listOfTravel;
@@ -188,12 +192,25 @@ public class ListFragment extends Fragment {
         startActivity(new Intent(getActivity(), CreateActivity.class));
     }
 
-    private void startDetailActivity(String travelId) {
+    private void startDetailActivity(String travelId, String dueDate) {
         Bundle bundle = new Bundle();
         bundle.putString("travelId", travelId);
-// set Fragmentclass Arguments
-        TravelDetail travelDetail = new TravelDetail();
+        bundle.putString("dueDate", dueDate);
+
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        TravelDetail travelDetail = (TravelDetail) manager.findFragmentByTag(DETAIL_FRAG);
+
+
+        if (travelDetail == null) {
+            travelDetail = TravelDetail.newInstance();
+        }
         travelDetail.setArguments(bundle);
+
+        BaseActivity.addFragmentToActivity(manager,
+                travelDetail,
+                R.id.rootActivityList,
+                DETAIL_FRAG
+        );
     }
 
 /*
@@ -347,7 +364,7 @@ public class ListFragment extends Fragment {
                         this.getAdapterPosition()
                 );
 
-                startDetailActivity(travel.getId());
+                startDetailActivity(travel.getId(), travel.getDueDate());
             }
         }
 

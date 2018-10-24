@@ -36,7 +36,7 @@ public class ListActivity extends BaseActivity {
         setContentView(R.layout.activity_list);
 
         if (ActiveAccSharedPreference.getActiveUserPreference(this).equals(null))
-            startLoginFragment();
+            startLoginActivity();
         else
             startListFragment();
     }
@@ -51,7 +51,7 @@ public class ListActivity extends BaseActivity {
         startActivity(a);
     }
 
-    private void startLoginFragment() {
+    private void startLoginActivity() {
         startActivity(new Intent(this, LoginActivity.class));
     }
 

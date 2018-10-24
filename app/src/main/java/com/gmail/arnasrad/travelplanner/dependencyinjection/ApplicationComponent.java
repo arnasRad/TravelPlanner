@@ -28,6 +28,7 @@ import com.gmail.arnasrad.travelplanner.create.GoogleMapFragment;
 import com.gmail.arnasrad.travelplanner.create.MainCreateFragment;
 import com.gmail.arnasrad.travelplanner.create.MapFragment;
 import com.gmail.arnasrad.travelplanner.detail.DetailFragment;
+import com.gmail.arnasrad.travelplanner.detail.TravelDetail;
 import com.gmail.arnasrad.travelplanner.list.ListFragment;
 import com.gmail.arnasrad.travelplanner.login.LoginFragment;
 import com.gmail.arnasrad.travelplanner.login.SignInFragment;
@@ -40,6 +41,7 @@ public interface ApplicationComponent {
     void inject(ListFragment listFragment);
     void inject(MainCreateFragment mainCreateFragment);
     void inject(CreateFragment createFragment);
+    void inject(TravelDetail travelDetail);
     //void inject(MapFragment mapFragment);
     void inject(GoogleMapFragment googleMapFragment);
     void inject(DetailFragment detailFragment);

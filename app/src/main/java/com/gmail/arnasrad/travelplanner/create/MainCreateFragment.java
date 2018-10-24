@@ -60,7 +60,7 @@ public class MainCreateFragment extends Fragment implements
     PlacePicker.IntentBuilder builder;
     private int DESTINATION_PICKER_REQUEST = 1;
     private int LOCATION_PICKER_REQUEST = 2;
-    private int ADD_PERSON_REQUEST = 90009;
+    private int ADD_PERSON_REQUEST = 3;
 
     DestinationAdapter destinationAdapter;
     LocationAdapter locationAdapter;

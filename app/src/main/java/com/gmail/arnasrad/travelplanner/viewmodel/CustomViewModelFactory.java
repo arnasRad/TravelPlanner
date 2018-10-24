@@ -53,6 +53,10 @@ public class CustomViewModelFactory implements ViewModelProvider.Factory {
             return (T) new NewTravelViewModel(travelRepository);
         } else if (modelClass.isAssignableFrom(TravelCollectionViewModel.class)) {
             return (T) new TravelCollectionViewModel(travelRepository);
+        } else if (modelClass.isAssignableFrom(LocationCollectionViewModel.class)) {
+            return (T) new LocationCollectionViewModel(locationRepository);
+        } else if (modelClass.isAssignableFrom(PersonCollectionViewModel.class)) {
+            return (T) new PersonCollectionViewModel(personRepository);
         } else {
             throw new IllegalArgumentException("ViewModel Not Found");
         }

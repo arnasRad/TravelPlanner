@@ -15,7 +15,6 @@ public class TravelCollectionViewModel extends ViewModel {
 
     private TravelRepository repository;
 
-    @Inject
     public TravelCollectionViewModel(TravelRepository repository) {
         this.repository = repository;
     }
