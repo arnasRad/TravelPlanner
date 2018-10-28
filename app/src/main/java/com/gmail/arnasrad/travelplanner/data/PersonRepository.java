@@ -18,6 +18,10 @@ public class PersonRepository {
         return personDao.getPersonList(travelId);
     }
 
+    public List<Person> getPeopleList(String travelId) {
+        return personDao.getPeopleList(travelId);
+    }
+
     public LiveData<Person> getPerson(int id) {
         return personDao.getPersonById(id);
     }

@@ -1,14 +1,11 @@
 package com.gmail.arnasrad.travelplanner.list;
 
 
-import android.app.Activity;
-import android.app.ActivityOptions;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,17 +16,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.transition.Fade;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -38,12 +31,13 @@ import com.gmail.arnasrad.travelplanner.RoomDemoApplication;
 import com.gmail.arnasrad.travelplanner.create.CreateActivity;
 import com.gmail.arnasrad.travelplanner.data.ListItem;
 import com.gmail.arnasrad.travelplanner.data.Travel;
-import com.gmail.arnasrad.travelplanner.detail.DetailActivity;
-import com.gmail.arnasrad.travelplanner.detail.TravelDetail;
+import com.gmail.arnasrad.travelplanner.detail.TravelDetailFragment;
 import com.gmail.arnasrad.travelplanner.login.LoginActivity;
 import com.gmail.arnasrad.travelplanner.util.ActiveAccSharedPreference;
 import com.gmail.arnasrad.travelplanner.util.BaseActivity;
 import com.gmail.arnasrad.travelplanner.viewmodel.ListItemCollectionViewModel;
+import com.gmail.arnasrad.travelplanner.viewmodel.LocationCollectionViewModel;
+import com.gmail.arnasrad.travelplanner.viewmodel.PersonCollectionViewModel;
 import com.gmail.arnasrad.travelplanner.viewmodel.TravelCollectionViewModel;
 
 import java.util.List;
@@ -57,7 +51,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ListFragment extends Fragment {
     private static final String DETAIL_FRAG = "DETAIL_FRAG";
 
-
+    private View mView;
     private List<Travel> listOfTravel;
 
     private String currentUsername;
@@ -68,7 +62,8 @@ public class ListFragment extends Fragment {
     @Inject
     ViewModelProvider.Factory viewModelFactory;
 
-    ListItemCollectionViewModel listItemCollectionViewModel;
+    LocationCollectionViewModel locationCollectionViewModel;
+    PersonCollectionViewModel personCollectionViewModel;
     TravelCollectionViewModel travelCollectionViewModel;
 
     public ListFragment() {
@@ -87,6 +82,7 @@ public class ListFragment extends Fragment {
         setHasOptionsMenu(true);
         currentUsername = ActiveAccSharedPreference.getActiveUserPreference(getContext());
 
+
         ((RoomDemoApplication) getActivity().getApplication())
                 .getApplicationComponent()
                 .inject(this);
@@ -95,12 +91,19 @@ public class ListFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        locationCollectionViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(LocationCollectionViewModel.class);
+        personCollectionViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(PersonCollectionViewModel.class);
+
         travelCollectionViewModel = ViewModelProviders.of(this, viewModelFactory)
                 .get(TravelCollectionViewModel.class);
         travelCollectionViewModel.getTravels(currentUsername).observe(this, new Observer<List<Travel>>() {
             @Override
             public void onChanged(@Nullable List<Travel> travels) {
                 if (listOfTravel == null) {
+                    setTravelData(travels);
+                } else if (travels.size() != listOfTravel.size()) {
                     setTravelData(travels);
                 }
             }
@@ -146,9 +149,10 @@ public class ListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_list, container, false);
+        if (mView == null)
+            mView = inflater.inflate(R.layout.fragment_list, container, false);
 
-        recyclerView = v.findViewById(R.id.recListActivity);
+        recyclerView = mView.findViewById(R.id.recListActivity);
         layoutInflater = getActivity().getLayoutInflater();
 /*
         toolbar = v.findViewById(R.id.tlbListActivity);
@@ -157,7 +161,7 @@ public class ListFragment extends Fragment {
         toolbar.setLogo(R.drawable.ic_view_list_white_24dp);
         toolbar.setTitleMarginStart(72);
 */
-        FloatingActionButton fabulous = v.findViewById(R.id.fabCreateNewItem);
+        FloatingActionButton fabulous = mView.findViewById(R.id.fabCreateNewItem);
 
         fabulous.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,7 +170,7 @@ public class ListFragment extends Fragment {
             }
         });
 
-        return v;
+        return mView;
     }
 
     @Override
@@ -192,29 +196,29 @@ public class ListFragment extends Fragment {
         startActivity(new Intent(getActivity(), CreateActivity.class));
     }
 
-    private void startDetailActivity(String travelId, String dueDate) {
+    private void startDetailFragment(String travelId, String dueDate) {
         Bundle bundle = new Bundle();
         bundle.putString("travelId", travelId);
         bundle.putString("dueDate", dueDate);
 
         FragmentManager manager = getActivity().getSupportFragmentManager();
-        TravelDetail travelDetail = (TravelDetail) manager.findFragmentByTag(DETAIL_FRAG);
+        TravelDetailFragment travelDetailFragment = (TravelDetailFragment) manager.findFragmentByTag(DETAIL_FRAG);
 
 
-        if (travelDetail == null) {
-            travelDetail = TravelDetail.newInstance();
+        if (travelDetailFragment == null) {
+            travelDetailFragment = TravelDetailFragment.newInstance();
         }
-        travelDetail.setArguments(bundle);
+        travelDetailFragment.setArguments(bundle);
 
-        BaseActivity.addFragmentToActivity(manager,
-                travelDetail,
+        BaseActivity.addStackedFragmentToActivity(manager,
+                travelDetailFragment,
                 R.id.rootActivityList,
                 DETAIL_FRAG
         );
     }
 
 /*
-    public void startDetailActivity(String itemId, View viewRoot) {
+    public void startDetailFragment(String itemId, View viewRoot) {
         Activity container = getActivity();
         Intent i = new Intent(container, DetailActivity.class);
         i.putExtra(EXTRA_ITEM_ID, itemId);
@@ -241,6 +245,7 @@ public class ListFragment extends Fragment {
     }
 
 */
+/*
     public void setListData(List<ListItem> listOfData) {
         //this.listOfData = listOfData;
 
@@ -270,7 +275,7 @@ public class ListFragment extends Fragment {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
-    }
+    }*/
 
 
     public void setTravelData(List<Travel> listOfTravel) {
@@ -298,10 +303,10 @@ public class ListFragment extends Fragment {
                 itemDecoration
         );
 
-/*
+
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
         itemTouchHelper.attachToRecyclerView(recyclerView);
-        */
+
     }
 
 
@@ -364,7 +369,7 @@ public class ListFragment extends Fragment {
                         this.getAdapterPosition()
                 );
 
-                startDetailActivity(travel.getId(), travel.getDueDate());
+                startDetailFragment(travel.getId(), travel.getDueDate());
             }
         }
 
@@ -385,16 +390,19 @@ public class ListFragment extends Fragment {
             @Override
             public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int position = viewHolder.getAdapterPosition();
-                travelCollectionViewModel.deleteTravel(
-                        listOfTravel.get(position)
-                );
+
+                Travel travel = listOfTravel.get(position);
+                String travelId = travel.getId();
+
+                locationCollectionViewModel.deleteLocationsByTravelId(travelId);
+                personCollectionViewModel.deletePersonListByTravelId(travelId);
+
+                travelCollectionViewModel.deleteTravel(travel);
 
                 //ensure View is consistent with underlying data
 
                 listOfTravel.remove(position);
                 adapter.notifyItemRemoved(position);
-
-
             }
         };
     }

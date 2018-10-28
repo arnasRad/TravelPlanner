@@ -18,6 +18,9 @@ public interface TravelDao {
     @Query("SELECT * FROM Travel WHERE id = :id")
     LiveData<Travel> getTravelById(String id);
 
+    @Query("SELECT * FROM Travel WHERE id = :id")
+    Travel getTravel(String id);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Long insertTravel(Travel travel);
 

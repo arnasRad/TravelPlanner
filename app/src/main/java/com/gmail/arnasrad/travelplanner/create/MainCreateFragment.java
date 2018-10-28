@@ -8,8 +8,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -31,6 +34,7 @@ import com.gmail.arnasrad.travelplanner.data.Person;
 import com.gmail.arnasrad.travelplanner.data.Travel;
 import com.gmail.arnasrad.travelplanner.list.ListActivity;
 import com.gmail.arnasrad.travelplanner.util.ActiveAccSharedPreference;
+import com.gmail.arnasrad.travelplanner.util.BaseActivity;
 import com.gmail.arnasrad.travelplanner.viewmodel.NewLocationViewModel;
 import com.gmail.arnasrad.travelplanner.viewmodel.NewPersonViewModel;
 import com.gmail.arnasrad.travelplanner.viewmodel.NewTravelViewModel;
@@ -54,8 +58,9 @@ import static com.gmail.arnasrad.travelplanner.util.BaseActivity.addStackedFragm
 
 public class MainCreateFragment extends Fragment implements
         AddPersonFragment.AddPersonDialogListener,
-        DatePickerDialog.OnDateSetListener{
+        DatePickerDialog.OnDateSetListener {
     private static final String GOOGLE_MAP_FRAG = "GOOGLE_MAP_FRAG";
+    private static final String ADD_PERSON_FRAG = "ADD_PERSON_FRAG";
 
     PlacePicker.IntentBuilder builder;
     private int DESTINATION_PICKER_REQUEST = 1;
@@ -87,12 +92,12 @@ public class MainCreateFragment extends Fragment implements
 
     private LayoutInflater layoutInflater;
 
-    @Inject
-    ViewModelProvider.Factory viewModelFactory;
-
     NewLocationViewModel newLocationViewModel;
     NewPersonViewModel newPersonViewModel;
     NewTravelViewModel newTravelViewModel;
+
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
 
     public MainCreateFragment() {
         // Required empty public constructor
@@ -126,7 +131,6 @@ public class MainCreateFragment extends Fragment implements
     @Override
     public void onViewCreated(@NonNull View v, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(v, savedInstanceState);
-
 
         dueDateAddBtn = v.findViewById(R.id.button_set_due_date);
         mainDestinationAddBtn = v.findViewById(R.id.button_add_main_destination);
@@ -180,10 +184,7 @@ public class MainCreateFragment extends Fragment implements
         peopleAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                AddPersonFragment addPersonFragment = AddPersonFragment.newInstance();
-                addPersonFragment.setTargetFragment(MainCreateFragment.this, ADD_PERSON_REQUEST);
-                addPersonFragment.show(fragmentManager, "Add Person");
+                startAddPersonFragment();
             }
         });
 
@@ -217,7 +218,7 @@ public class MainCreateFragment extends Fragment implements
                     destinationAdapter.notifyItemChanged(0);
                 }
 
-                String toastMsg = String.format("%s is set as main travel destination", place.getName());
+                String toastMsg = String.format(getString(R.string.main_destination_set_successfully), place.getName());
                 Toast.makeText(context, toastMsg, Toast.LENGTH_LONG).show();
             }
         }
@@ -230,7 +231,7 @@ public class MainCreateFragment extends Fragment implements
                 listOfLocation.add(new Location(currentDate, place.getViewport(), place, false));
                 locationAdapter.notifyItemInserted(listOfLocation.size());
 
-                String toastMsg = String.format("Added %s to locations list", place.getName());
+                String toastMsg = String.format(getString(R.string.location_added_successfully), place.getName());
                 Toast.makeText(context, toastMsg, Toast.LENGTH_LONG).show();
             }
         }
@@ -249,25 +250,31 @@ public class MainCreateFragment extends Fragment implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.done:
-                for (Location location: listOfLocation) {
-                    newLocationViewModel.addNewLocationToDatabase(location);
+                if (listOfDestination.size() != 0) {
+                    Location tempMainDestination = listOfDestination.get(0);
+                    newLocationViewModel.addNewLocationToDatabase(tempMainDestination);
+
+                    for (Location location : listOfLocation) {
+                        newLocationViewModel.addNewLocationToDatabase(location);
+                    }
+
+                    for (Person person : listOfPerson) {
+                        newPersonViewModel.addNewPersonToDatabase(person);
+                    }
+
+                    newTravelViewModel.addNewTravelToDatabase(new Travel(currentDate,
+                            ActiveAccSharedPreference.getActiveUserPreference(getContext()),
+                            tempMainDestination.getPlaceName(), getDate(dateFormatString, dueDate),
+                            getRandomDrawableResource()));
+
+                    Toast.makeText(getContext(), getString(R.string.travel_created_successfully_message), Toast.LENGTH_LONG).show();
+
+                    startListActivity();
+                    return true;
+                } else {
+                    Toast.makeText(getContext(), getString(R.string.no_main_destination_error), Toast.LENGTH_LONG).show();
+
                 }
-
-                Location tempMainDestination = listOfDestination.get(0);
-                newLocationViewModel.addNewLocationToDatabase(tempMainDestination);
-
-                for(Person person: listOfPerson) {
-                    newPersonViewModel.addNewPersonToDatabase(person);
-                }
-
-                newTravelViewModel.addNewTravelToDatabase(new Travel(currentDate,
-                        ActiveAccSharedPreference.getActiveUserPreference(getContext()),
-                        tempMainDestination.getPlaceName(), getDate(dateFormatString, dueDate),
-                        getRandomDrawableResource()));
-                Toast.makeText(getContext(), "New travel plan has been created successfully", Toast.LENGTH_LONG).show();
-
-                startListActivity();
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -302,8 +309,8 @@ public class MainCreateFragment extends Fragment implements
 
     private void initDate() {
         dueDate = Calendar.getInstance();
-        dateFormatString = "EEE, MMM d, ''yy";
-        altDateFormatString = "yyyy/MM/dd/kk:mm:ss";
+        dateFormatString = getString(R.string.date_format_string);
+        altDateFormatString = getString(R.string.alternate_date_format_string);
         currentDate = getDate(altDateFormatString, dueDate);
     }
 
@@ -357,6 +364,36 @@ public class MainCreateFragment extends Fragment implements
         );
     }
 
+    private void startAddPersonFragment() {
+/*
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        AddPersonFragment addPersonFragment= (AddPersonFragment)
+                fragmentManager.findFragmentByTag(ADD_PERSON_FRAG);
+
+        if (addPersonFragment == null) {
+            addPersonFragment = AddPersonFragment.newInstance();
+        }
+
+        addPersonFragment.setTargetFragment(MainCreateFragment.this, ADD_PERSON_REQUEST);
+
+        BaseActivity.showStackedFragmentToActivity(fragmentManager,
+                addPersonFragment,
+                R.id.rootActivityCreate,
+                ADD_PERSON_FRAG
+        );
+*/
+
+
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        AddPersonFragment addPersonFragment = AddPersonFragment.newInstance();
+        addPersonFragment.setTargetFragment(MainCreateFragment.this, ADD_PERSON_REQUEST);
+        addPersonFragment.setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Material_Dialog);
+        addPersonFragment.show(fragmentManager, "Add Person");
+
+    }
+
     private void startListActivity() {
         startActivity(new Intent(getActivity(), ListActivity.class));
     }
@@ -366,7 +403,7 @@ public class MainCreateFragment extends Fragment implements
         listOfPerson.add(new Person(currentDate, name, surname, email));
         personAdapter.notifyItemInserted(listOfPerson.size());
 
-        String toastMsg = String.format("%s %s is added to people list", name, surname);
+        String toastMsg = String.format(getString(R.string.person_added_successfully), name, surname);
         Toast.makeText(getContext(), toastMsg, Toast.LENGTH_LONG).show();
     }
 

@@ -26,6 +26,10 @@ public class LocationRepository {
         return locationDao.getDestinationList(travelId);
     }
 
+    public List<Location> getFullLocationList(String travelId) {
+        return locationDao.getFullLocationList(travelId);
+    }
+
     public LiveData<Location> getLocation(int id) {
         return locationDao.getLocationById(id);
     }

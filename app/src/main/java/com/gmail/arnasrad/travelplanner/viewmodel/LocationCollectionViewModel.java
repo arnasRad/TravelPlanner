@@ -27,6 +27,11 @@ public class LocationCollectionViewModel extends ViewModel {
         return repository.getDestinationList(travelId);
     }
 
+    public void deleteLocationsByTravelId(String travelId) {
+        DeleteLocationListTask task = new DeleteLocationListTask();
+        task.execute(travelId);
+    }
+
     public void deleteLocation(Location location) {
         DeleteLocationTask task = new DeleteLocationTask();
         task.execute(location);
@@ -37,6 +42,21 @@ public class LocationCollectionViewModel extends ViewModel {
         protected Void doInBackground(Location... listItems) {
             repository.deleteLocation(listItems[0]);
             return null;
+        }
+    }
+
+    private class DeleteLocationListTask extends AsyncTask<String, Void, List<Location>> {
+        @Override
+        protected List<Location> doInBackground(String ... travelId) {
+            return repository.getFullLocationList(travelId[0]);
+        }
+
+        @Override
+        protected void onPostExecute(List<Location> locations) {
+            super.onPostExecute(locations);
+            for(Location loc: locations) {
+                deleteLocation(loc);
+            }
         }
     }
 }

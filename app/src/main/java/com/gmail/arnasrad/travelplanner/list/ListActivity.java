@@ -40,16 +40,20 @@ public class ListActivity extends BaseActivity {
         else
             startListFragment();
     }
-
+/*
     @Override
     public void onBackPressed() {
         super.onBackPressed();
 
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.popBackStack();
+    }
+*/
+/*
         Intent a = new Intent(Intent.ACTION_MAIN);
         a.addCategory(Intent.CATEGORY_HOME);
         a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(a);
-    }
+        startActivity(a);*/
 
     private void startLoginActivity() {
         startActivity(new Intent(this, LoginActivity.class));

@@ -14,6 +14,9 @@ public interface PersonDao {
     @Query("SELECT * FROM Person WHERE travelId = :travelId")
     LiveData<List<Person>> getPersonList(String travelId);
 
+    @Query("SELECT * FROM Person WHERE travelId = :travelId")
+    List<Person> getPeopleList(String travelId);
+
     @Query("SELECT * FROM Person WHERE id = :id")
     LiveData<Person> getPersonById(int id);
 

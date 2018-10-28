@@ -20,6 +20,9 @@ public interface LocationDao {
     @Query("SELECT * FROM Location WHERE travelId = :travelId AND isDestination = 1")
     LiveData<List<Location>> getDestinationList(String travelId);
 
+    @Query("SELECT * FROM Location WHERE travelId = :travelId")
+    List<Location> getFullLocationList(String travelId);
+
     @Query("SELECT * FROM Location WHERE id = :id")
     LiveData<Location> getLocationById(int id);
 

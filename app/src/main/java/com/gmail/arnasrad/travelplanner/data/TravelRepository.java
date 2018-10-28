@@ -19,9 +19,11 @@ public class TravelRepository {
         return travelDao.getTravelList(username);
     }
 
-    public LiveData<Travel> getTravel(String id) {
+    public LiveData<Travel> getTravelLiveData(String id) {
         return travelDao.getTravelById(id);
     }
+
+    public Travel getTravelById(String id) {return travelDao.getTravel(id);}
 
     public Long insertTravel(Travel travel) {
         return travelDao.insertTravel(travel);

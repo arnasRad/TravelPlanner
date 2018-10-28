@@ -24,6 +24,11 @@ public class PersonCollectionViewModel extends ViewModel {
         return repository.getPersonList(travelId);
     }
 
+    public void deletePersonListByTravelId(String travelId) {
+        DeletePersonListTask task = new DeletePersonListTask();
+        task.execute(travelId);
+    }
+
     public void deletePerson(Person person) {
         DeletePersonTask task = new DeletePersonTask();
         task.execute(person);
@@ -34,6 +39,21 @@ public class PersonCollectionViewModel extends ViewModel {
         protected Void doInBackground(Person... listItems) {
             repository.deletePerson(listItems[0]);
             return null;
+        }
+    }
+
+    private class DeletePersonListTask extends AsyncTask<String, Void, List<Person>> {
+        @Override
+        protected List<Person> doInBackground(String ... travelId) {
+            return repository.getPeopleList(travelId[0]);
+        }
+
+        @Override
+        protected void onPostExecute(List<Person> personList) {
+            super.onPostExecute(personList);
+            for(Person person: personList) {
+                deletePerson(person);
+            }
         }
     }
 }

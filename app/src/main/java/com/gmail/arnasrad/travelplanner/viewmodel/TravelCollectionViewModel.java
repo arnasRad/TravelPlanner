@@ -9,8 +9,6 @@ import com.gmail.arnasrad.travelplanner.data.TravelRepository;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 public class TravelCollectionViewModel extends ViewModel {
 
     private TravelRepository repository;
@@ -23,16 +21,38 @@ public class TravelCollectionViewModel extends ViewModel {
         return repository.getTravelList(username);
     }
 
+    public Travel getTravelById(String id) {
+        return repository.getTravelById(id);
+    }
+
+    public void deleteTravelById(String id) {
+        DeleteTravelByIdTask task = new DeleteTravelByIdTask();
+        task.execute(id);
+    }
+
     public void deleteTravel(Travel listItem) {
-        DeleteItemTask task = new DeleteItemTask();
+        DeleteTravelTask task = new DeleteTravelTask();
         task.execute(listItem);
     }
 
-    private class DeleteItemTask extends AsyncTask<Travel, Void, Void> {
+    private class DeleteTravelTask extends AsyncTask<Travel, Void, Void> {
         @Override
         protected Void doInBackground(Travel... listItems) {
             repository.deleteTravel(listItems[0]);
             return null;
+        }
+    }
+
+    private class DeleteTravelByIdTask extends AsyncTask<String, Void, Travel> {
+        @Override
+        protected Travel doInBackground(String ... id) {
+            return getTravelById(id[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Travel travel) {
+            super.onPostExecute(travel);
+            deleteTravel(travel);
         }
     }
 
