@@ -5,6 +5,7 @@
     <string name="errorNoExtraFound">Error Retrieving Item Detail</string>
 
     <string name="menu_sign_out">Sign Out</string>
+    <string name="menu_show_outdated_list">Archive</string>
 
     <string name="create_set_btn">Set</string>
     <string name="create_edit_btn">Edit</string>

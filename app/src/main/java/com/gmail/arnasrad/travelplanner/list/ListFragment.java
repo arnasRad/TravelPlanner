@@ -6,7 +6,6 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -31,20 +30,20 @@ import android.widget.TextView;
 import com.gmail.arnasrad.travelplanner.R;
 import com.gmail.arnasrad.travelplanner.RoomDemoApplication;
 import com.gmail.arnasrad.travelplanner.create.CreateActivity;
-import com.gmail.arnasrad.travelplanner.data.ListItem;
 import com.gmail.arnasrad.travelplanner.data.Travel;
 import com.gmail.arnasrad.travelplanner.detail.TravelDetailFragment;
 import com.gmail.arnasrad.travelplanner.login.LoginActivity;
 import com.gmail.arnasrad.travelplanner.util.ActiveAccSharedPreference;
 import com.gmail.arnasrad.travelplanner.util.BaseActivity;
-import com.gmail.arnasrad.travelplanner.viewmodel.ListItemCollectionViewModel;
 import com.gmail.arnasrad.travelplanner.viewmodel.LocationCollectionViewModel;
 import com.gmail.arnasrad.travelplanner.viewmodel.PersonCollectionViewModel;
 import com.gmail.arnasrad.travelplanner.viewmodel.TravelCollectionViewModel;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -58,13 +57,17 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ListFragment extends Fragment {
     private static final String DETAIL_FRAG = "DETAIL_FRAG";
+    private static final String ARCHIVE_FRAG = "ARCHIVE_FRAG";
 
     private static final int PAST_TRAVEL = 50000;
     private static final int CURRENT_TRAVEL = 50001;
     private static final int DUE_TRAVEL = 50002;
 
     private View mView;
+    private List<Travel> activeList;
+    private List<Travel> archiveList;
     private List<Travel> listOfTravel;
+
 
     String currentDate;
 
@@ -117,10 +120,18 @@ public class ListFragment extends Fragment {
         travelCollectionViewModel.getTravels(currentUsername).observe(this, new Observer<List<Travel>>() {
             @Override
             public void onChanged(@Nullable List<Travel> travels) {
-                if (listOfTravel == null) {
-                    setTravelData(travels);
-                } else if (travels.size() != listOfTravel.size()) {
-                    setTravelData(travels);
+                if (activeList == null) {
+                    try {
+                        setTravelData(travels);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                } else if (travels.size() != activeList.size()) {
+                    try {
+                        setTravelData(travels);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -141,6 +152,9 @@ public class ListFragment extends Fragment {
                 ActiveAccSharedPreference.removeActiveUserPreference(getContext());
                 startLoginActivity();
 
+                return true;
+            case R.id.show_outdated_list:
+                startArchiveFragment();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -191,6 +205,26 @@ public class ListFragment extends Fragment {
         startActivity(new Intent(getActivity(), CreateActivity.class));
     }
 
+    private void startArchiveFragment() {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("archive_list", (Serializable) archiveList);
+
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        OutdatedListFragment outdatedListFragment = (OutdatedListFragment) manager.findFragmentByTag(ARCHIVE_FRAG);
+
+        if (outdatedListFragment == null) {
+            outdatedListFragment = OutdatedListFragment.newInstance();
+        }
+
+        outdatedListFragment.setArguments(bundle);
+
+        BaseActivity.addStackedFragmentToActivity(manager,
+                outdatedListFragment,
+                R.id.rootActivityList,
+                ARCHIVE_FRAG
+        );
+    }
+
     private void startDetailFragment(String travelId, String dueDate) {
         Bundle bundle = new Bundle();
         bundle.putString("travelId", travelId);
@@ -213,8 +247,11 @@ public class ListFragment extends Fragment {
     }
 
 
-    public void setTravelData(List<Travel> listOfTravel) {
+    public void setTravelData(List<Travel> listOfTravel) throws ParseException {
+        this.activeList = new ArrayList<>();
+        this.archiveList = new ArrayList<>();
         this.listOfTravel = listOfTravel;
+        getActiveListOfTravel(listOfTravel);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
@@ -258,7 +295,7 @@ public class ListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull CustomAdapter.CustomViewHolder holder, int position) {
-            Travel currentItem = listOfTravel.get(position);
+            Travel currentItem = activeList.get(position);
             String tempDateString = currentItem.getStartDate() + " - " + currentItem.getEndDate();
 
             holder.coloredCircle.setImageResource(currentItem.getColorResource());
@@ -293,7 +330,7 @@ public class ListFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return listOfTravel.size();
+            return activeList.size();
         }
 
         class CustomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -318,7 +355,7 @@ public class ListFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                Travel travel = listOfTravel.get(
+                Travel travel = activeList.get(
                         this.getAdapterPosition()
                 );
                 String tempDateString = travel.getStartDate() + " - " + travel.getEndDate();
@@ -345,7 +382,7 @@ public class ListFragment extends Fragment {
             public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int position = viewHolder.getAdapterPosition();
 
-                Travel travel = listOfTravel.get(position);
+                Travel travel = activeList.get(position);
                 String travelId = travel.getId();
 
                 locationCollectionViewModel.deleteLocationsByTravelId(travelId);
@@ -355,7 +392,7 @@ public class ListFragment extends Fragment {
 
                 //ensure View is consistent with underlying data
 
-                listOfTravel.remove(position);
+                activeList.remove(position);
                 adapter.notifyItemRemoved(position);
             }
         };
@@ -390,5 +427,15 @@ public class ListFragment extends Fragment {
         Date date = format.parse(dateString);
         System.out.println(date);
         return date;
+    }
+
+    private void getActiveListOfTravel(List<Travel> travelList) throws ParseException {
+        for (Travel travel: travelList) {
+            if (getTravelType(travel.getStartDate(), travel.getEndDate()) == PAST_TRAVEL) {
+                archiveList.add(travel);
+            } else {
+                activeList.add(travel);
+            }
+        }
     }
 }
