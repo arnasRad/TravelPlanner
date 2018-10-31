@@ -18,6 +18,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,6 +34,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.akexorcist.googledirection.DirectionCallback;
+import com.akexorcist.googledirection.GoogleDirection;
+import com.akexorcist.googledirection.model.Direction;
+import com.akexorcist.googledirection.model.Info;
+import com.akexorcist.googledirection.model.Leg;
+import com.akexorcist.googledirection.model.Route;
+import com.akexorcist.googledirection.util.DirectionConverter;
 import com.gmail.arnasrad.travelplanner.R;
 import com.gmail.arnasrad.travelplanner.RoomDemoApplication;
 import com.gmail.arnasrad.travelplanner.data.Location;
@@ -50,6 +58,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONObject;
@@ -103,6 +112,8 @@ public class TravelDetailFragment extends Fragment
     private GoogleMap mGoogleMap;
     private MapView mMapView;
     ArrayList<Marker> markerPoints = new ArrayList();
+    PolylineOptions polylineOptions;
+    Polyline polyline;
 
     private View mView;
 
@@ -262,7 +273,7 @@ public class TravelDetailFragment extends Fragment
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(final GoogleMap googleMap) {
         mGoogleMap = googleMap;
 
         enableMyLocation();
@@ -272,11 +283,16 @@ public class TravelDetailFragment extends Fragment
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                // shows directions between origin and dest markers
+                //showRouteBetweenTwoPoints(getCurrentLocation(), latLng);
+
+                getDurationBetweenToPoints(getCurrentLocation(), latLng);
+                //Toast.makeText(getContext(), String.valueOf(duration), Toast.LENGTH_LONG);
 
                 /*
-                LatLng origin = (LatLng) markerPoints.get(0).getPosition();
-                LatLng dest = (LatLng) markerPoints.get(1).getPosition();
+                // shows directions between origin and dest markers
+                LatLng origin = getCurrentLocation();
+                LatLng dest = latLng;
+                //LatLng dest = new LatLng(listOfLocation.get(0).getLatitude(), listOfLocation.get(0).getLongitude());
 
                 // Getting URL to the Google Directions API
                 String url = getDirectionsUrl(origin, dest);
@@ -285,9 +301,92 @@ public class TravelDetailFragment extends Fragment
 
                 // Start downloading json data from Google Directions API
                 downloadTask.execute(url);
-*/
+                */
             }
         });
+    }
+    //  TODO: finish time ordered location list for complete routes
+/*
+    private List<Location> getTimeOrderedLocationList(List<Location> locList) {
+        List<Location> orderedLocationList = new ArrayList<Location>();
+        List<Location> tempLocationList = new ArrayList<Location>(locList);
+
+        LatLng currentLocationPosition = getCurrentLocation();
+        int position = 0;
+        int i = 0;
+        LatLng tempLatLng;
+        double minDuration = 0;
+        double duration;
+//http://www.akexorcist.com/2015/12/google-direction-library-for-android-en.html
+        for (Location location: tempLocationList) {
+            tempLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+            duration = getDurationBetweenToPoints(currentLocationPosition, tempLatLng);
+            if (minDuration != 0 && minDuration > duration) {
+                minDuration = duration;
+                position = i;
+            }
+            ++i;
+        }
+        orderedLocationList.add(locList.get(position));
+        tempLocationList.remove(position);
+
+
+
+        return orderedLocationList;
+    }
+    */
+
+    private double getDurationBetweenToPoints(LatLng startPoint, LatLng endPoint) {
+        final Info[] info = new Info[1];
+        GoogleDirection.withServerKey(getString(R.string.google_maps_key))
+                .from(startPoint)
+                .to(endPoint)
+                .execute(new DirectionCallback() {
+                    @Override
+                    public void onDirectionSuccess(Direction direction, String rawBody) {
+                        if (polyline != null)
+                            polyline.remove();
+                        Route route = direction.getRouteList().get(0);
+                        Leg leg = route.getLegList().get(0);
+                        info[0] = leg.getDuration();
+                        double duration = Double.parseDouble(info[0].getValue());
+                        Toast.makeText(getContext(), String.valueOf(duration), Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onDirectionFailure(Throwable t) {
+                        System.out.println("EROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOR");
+                        Log.d(TAG, "EROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOR");
+                        info[0] = null;
+                    }
+                });
+        return 0;
+    }
+
+    private void showRouteBetweenTwoPoints(LatLng startPoint, LatLng endPoint) {
+        GoogleDirection.withServerKey(getString(R.string.google_maps_key))
+                .from(startPoint)
+                .to(endPoint)
+                .execute(new DirectionCallback() {
+                    @Override
+                    public void onDirectionSuccess(Direction direction, String rawBody) {
+                        if (polyline != null)
+                            polyline.remove();
+                        Route route = direction.getRouteList().get(0);
+                        Leg leg = route.getLegList().get(0);
+                        ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
+                        int colorValue = ResourcesCompat.getColor(getResources(), R.color.colorAccent, null);
+                        polylineOptions = DirectionConverter
+                                .createPolyline(getContext(), directionPositionList,
+                                            5, colorValue);
+                        polyline = mGoogleMap.addPolyline(polylineOptions);
+                    }
+
+                    @Override
+                    public void onDirectionFailure(Throwable t) {
+
+                    }
+                });
     }
 
 
@@ -665,8 +764,7 @@ public class TravelDetailFragment extends Fragment
                 lineOptions.geodesic(true);
 
             }
-
-// Drawing polyline in the Google Map for the i-th route
+            // Drawing polyline in the Google Map for the i-th route
             mGoogleMap.addPolyline(lineOptions);
         }
     }

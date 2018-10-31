@@ -24,8 +24,8 @@ public interface TravelDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Long insertTravel(Travel travel);
 
-    @Query("UPDATE Travel SET mainDestination = :mainDestination, dueDate = :dueDate WHERE id = :id")
-    void updateTravel(String id, String mainDestination, String dueDate);
+    @Query("UPDATE Travel SET mainDestination = :mainDestination, startDate = :startDate, endDate = :endDate WHERE id = :id")
+    void updateTravel(String id, String mainDestination, String startDate, String endDate);
 
     @Delete
     void deleteTravel(Travel travel);

@@ -29,8 +29,8 @@ public class TravelRepository {
         return travelDao.insertTravel(travel);
     }
 
-    public void updateTravel(String id, String mainDestination, String dueDate) {
-        travelDao.updateTravel(id, mainDestination, dueDate);
+    public void updateTravel(String id, String mainDestination, String startDate, String endDate) {
+        travelDao.updateTravel(id, mainDestination, startDate, endDate);
     }
 
     public void deleteTravel(Travel travel) {

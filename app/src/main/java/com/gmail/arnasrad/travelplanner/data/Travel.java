@@ -13,14 +13,17 @@ public class Travel {
     private String id;
     private String username;
     private String mainDestination;
-    private String dueDate;
+    private String startDate;
+    private String endDate;
     private int colorResource;
 
-    public Travel(String id, String username, String mainDestination, String dueDate, int colorResource) {
+    public Travel(@NonNull String id, String username, String mainDestination,
+                  String startDate, String endDate, int colorResource) {
         this.id = id;
         this.username = username;
         this.mainDestination = mainDestination;
-        this.dueDate = dueDate;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.colorResource = colorResource;
     }
 
@@ -49,12 +52,20 @@ public class Travel {
         this.mainDestination = mainDestination;
     }
 
-    public String getDueDate() {
-        return dueDate;
+    public String getStartDate() {
+        return startDate;
     }
 
-    public void setDueDate(String dueDate) {
-        this.dueDate = dueDate;
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
     }
 
     public int getColorResource() {

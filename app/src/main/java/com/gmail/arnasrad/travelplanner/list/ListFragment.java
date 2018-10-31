@@ -6,6 +6,8 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -40,7 +42,13 @@ import com.gmail.arnasrad.travelplanner.viewmodel.LocationCollectionViewModel;
 import com.gmail.arnasrad.travelplanner.viewmodel.PersonCollectionViewModel;
 import com.gmail.arnasrad.travelplanner.viewmodel.TravelCollectionViewModel;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -51,8 +59,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ListFragment extends Fragment {
     private static final String DETAIL_FRAG = "DETAIL_FRAG";
 
+    private static final int PAST_TRAVEL = 50000;
+    private static final int CURRENT_TRAVEL = 50001;
+    private static final int DUE_TRAVEL = 50002;
+
     private View mView;
     private List<Travel> listOfTravel;
+
+    String currentDate;
 
     private String currentUsername;
     private LayoutInflater layoutInflater;
@@ -78,6 +92,8 @@ public class ListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        currentDate = getCurrentDate(getString(R.string.date_format_string));
 
         setHasOptionsMenu(true);
         currentUsername = ActiveAccSharedPreference.getActiveUserPreference(getContext());
@@ -108,21 +124,6 @@ public class ListFragment extends Fragment {
                 }
             }
         });
-
-        /*
-        //Set up and subscribe (observe) to the ViewModel
-        listItemCollectionViewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(ListItemCollectionViewModel.class);
-
-        listItemCollectionViewModel.getListItems().observe(this, new Observer<List<ListItem>>() {
-            @Override
-            public void onChanged(@Nullable List<ListItem> listItems) {
-                //if (listOfData == null) {
-                //    setListData(listItems);
-                //}
-            }
-        });
-*/
     }
 
     /*------------------------------- Menu -------------------------------*/
@@ -154,13 +155,7 @@ public class ListFragment extends Fragment {
 
         recyclerView = mView.findViewById(R.id.recListActivity);
         layoutInflater = getActivity().getLayoutInflater();
-/*
-        toolbar = v.findViewById(R.id.tlbListActivity);
 
-        toolbar.setTitle(R.string.titleToolbar);
-        toolbar.setLogo(R.drawable.ic_view_list_white_24dp);
-        toolbar.setTitleMarginStart(72);
-*/
         FloatingActionButton fabulous = mView.findViewById(R.id.fabCreateNewItem);
 
         fabulous.setOnClickListener(new View.OnClickListener() {
@@ -217,66 +212,6 @@ public class ListFragment extends Fragment {
         );
     }
 
-/*
-    public void startDetailFragment(String itemId, View viewRoot) {
-        Activity container = getActivity();
-        Intent i = new Intent(container, DetailActivity.class);
-        i.putExtra(EXTRA_ITEM_ID, itemId);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            assert container != null;
-            container.getWindow().setEnterTransition(new Fade(Fade.IN));
-            container.getWindow().setEnterTransition(new Fade(Fade.OUT));
-
-            ActivityOptions options = ActivityOptions
-                    .makeSceneTransitionAnimation(container,
-                            new Pair<>(viewRoot.findViewById(R.id.imvListItemCircle),
-                                    getString(R.string.transitionDrawable)),
-                            new Pair<>(viewRoot.findViewById(R.id.lblMessage),
-                                    getString(R.string.transitionMessage)),
-                            new Pair<>(viewRoot.findViewById(R.id.lblDateAndTime),
-                                    getString(R.string.transitionTimeAndDate)));
-
-            startActivity(i, options.toBundle());
-
-        } else {
-            startActivity(i);
-        }
-    }
-
-*/
-/*
-    public void setListData(List<ListItem> listOfData) {
-        //this.listOfData = listOfData;
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
-        //adapter = new CustomAdapter();
-        //recyclerView.setAdapter(adapter);
-
-
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(
-                recyclerView.getContext(),
-                layoutManager.getOrientation()
-        );
-
-        itemDecoration.setDrawable(
-                ContextCompat.getDrawable(
-                        getActivity(),
-                        R.drawable.divider_gray
-                )
-        );
-
-        recyclerView.addItemDecoration(
-                itemDecoration
-        );
-
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
-        itemTouchHelper.attachToRecyclerView(recyclerView);
-
-    }*/
-
 
     public void setTravelData(List<Travel> listOfTravel) {
         this.listOfTravel = listOfTravel;
@@ -324,16 +259,34 @@ public class ListFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull CustomAdapter.CustomViewHolder holder, int position) {
             Travel currentItem = listOfTravel.get(position);
+            String tempDateString = currentItem.getStartDate() + " - " + currentItem.getEndDate();
 
             holder.coloredCircle.setImageResource(currentItem.getColorResource());
-
             holder.message.setText(
                     currentItem.getMainDestination()
             );
-
             holder.dateAndTime.setText(
-                    currentItem.getDueDate()
+                    tempDateString
             );
+
+            String startDate = currentItem.getStartDate();
+            String endDate = currentItem.getEndDate();
+            try {
+                int travelType = getTravelType(startDate, endDate);
+
+                switch (travelType) {
+                    case PAST_TRAVEL:
+                        holder.dateAndTime.setTextColor(Color.RED);
+                        break;
+                    case CURRENT_TRAVEL:
+                        holder.dateAndTime.setTextColor(Color.GREEN);
+                        break;
+                    case DUE_TRAVEL:
+                        break;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
             holder.loading.setVisibility(View.INVISIBLE);
         }
@@ -368,8 +321,9 @@ public class ListFragment extends Fragment {
                 Travel travel = listOfTravel.get(
                         this.getAdapterPosition()
                 );
+                String tempDateString = travel.getStartDate() + " - " + travel.getEndDate();
 
-                startDetailFragment(travel.getId(), travel.getDueDate());
+                startDetailFragment(travel.getId(), tempDateString);
             }
         }
 
@@ -407,4 +361,34 @@ public class ListFragment extends Fragment {
         };
     }
 
+    private String getCurrentDate(String formatString) {
+        Calendar calCurrDate = Calendar.getInstance();
+        Date dateCurrDate = calCurrDate.getTime();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat(formatString);
+
+        return dateFormat.format(dateCurrDate);
+    }
+
+    // checks whether current date is in given date bounds
+    private int getTravelType(String startDate, String endDate) throws ParseException {
+        String dateFormat = getString(R.string.date_format_string);
+        long currentTime = convertStringToDate(currentDate, dateFormat).getTime();
+        long startTime = convertStringToDate(startDate, dateFormat).getTime();
+        long endTime = convertStringToDate(endDate, dateFormat).getTime();
+
+        if (currentTime < startTime)
+            return DUE_TRAVEL;
+        else if (currentTime <= endTime)
+            return CURRENT_TRAVEL;
+        else
+            return PAST_TRAVEL;
+    }
+
+    private Date convertStringToDate(String dateString, String formatString) throws ParseException {
+        DateFormat format = new SimpleDateFormat(formatString, Locale.ENGLISH);
+        Date date = format.parse(dateString);
+        System.out.println(date);
+        return date;
+    }
 }

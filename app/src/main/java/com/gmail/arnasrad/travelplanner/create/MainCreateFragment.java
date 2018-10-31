@@ -11,8 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -34,7 +32,6 @@ import com.gmail.arnasrad.travelplanner.data.Person;
 import com.gmail.arnasrad.travelplanner.data.Travel;
 import com.gmail.arnasrad.travelplanner.list.ListActivity;
 import com.gmail.arnasrad.travelplanner.util.ActiveAccSharedPreference;
-import com.gmail.arnasrad.travelplanner.util.BaseActivity;
 import com.gmail.arnasrad.travelplanner.viewmodel.NewLocationViewModel;
 import com.gmail.arnasrad.travelplanner.viewmodel.NewPersonViewModel;
 import com.gmail.arnasrad.travelplanner.viewmodel.NewTravelViewModel;
@@ -75,7 +72,8 @@ public class MainCreateFragment extends Fragment implements
     private List<Location> listOfLocation;
     private List<Person> listOfPerson;
 
-    private TextView dueDateTextView;
+    private TextView startDateTextView;
+    private TextView endDateTextView;
     private RecyclerView mainDestinationRecyclerView;
     private RecyclerView locationRecyclerView;
     private RecyclerView personRecyclerView;
@@ -83,9 +81,11 @@ public class MainCreateFragment extends Fragment implements
     String currentDate;
     String dateFormatString;
     String altDateFormatString;
-    Calendar dueDate;
+    Calendar startDate;
+    Calendar endDate;
 
-    Button dueDateAddBtn;
+    Button startDateAddBtn;
+    Button endDateAddBtn;
     Button mainDestinationAddBtn;
     Button locationsAddBtn;
     Button peopleAddBtn;
@@ -132,35 +132,57 @@ public class MainCreateFragment extends Fragment implements
     public void onViewCreated(@NonNull View v, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(v, savedInstanceState);
 
-        dueDateAddBtn = v.findViewById(R.id.button_set_due_date);
+        startDateAddBtn = v.findViewById(R.id.button_set_start_date);
+        endDateAddBtn = v.findViewById(R.id.button_set_end_date);
         mainDestinationAddBtn = v.findViewById(R.id.button_add_main_destination);
         locationsAddBtn = v.findViewById(R.id.button_add_location);
         peopleAddBtn = v.findViewById(R.id.button_add_person);
 
-        dueDateTextView = v.findViewById(R.id.due_date_lbl);
+        startDateTextView = v.findViewById(R.id.create_start_date_tw);
+        endDateTextView = v.findViewById(R.id.create_end_date_tw);
         mainDestinationRecyclerView = v.findViewById(R.id.detail_main_destination_rw);
         locationRecyclerView = v.findViewById(R.id.detail_locations_rw);
         personRecyclerView = v.findViewById(R.id.create_people_rw);
 
         initListData();
 
-        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+        final DatePickerDialog.OnDateSetListener startDateListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                dueDate.set(Calendar.YEAR, year);
-                dueDate.set(Calendar.MONTH, month);
-                dueDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                updateDueDateLabel();
+                startDate.set(Calendar.YEAR, year);
+                startDate.set(Calendar.MONTH, month);
+                startDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateStartDateLabel();
             }
         };
 
-        dueDateAddBtn.setOnClickListener(new View.OnClickListener() {
+        final DatePickerDialog.OnDateSetListener endDateListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                endDate.set(Calendar.YEAR, year);
+                endDate.set(Calendar.MONTH, month);
+                endDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateEndDateLabel();
+            }
+        };
+
+        startDateAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new DatePickerDialog(getContext(), date,
-                        dueDate.get(Calendar.YEAR),
-                        dueDate.get(Calendar.MONTH),
-                        dueDate.get(Calendar.DAY_OF_MONTH)).show();
+                new DatePickerDialog(getContext(), startDateListener,
+                        startDate.get(Calendar.YEAR),
+                        startDate.get(Calendar.MONTH),
+                        startDate.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+        endDateAddBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(getContext(), endDateListener,
+                        endDate.get(Calendar.YEAR),
+                        endDate.get(Calendar.MONTH),
+                        endDate.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
 
@@ -264,8 +286,8 @@ public class MainCreateFragment extends Fragment implements
 
                     newTravelViewModel.addNewTravelToDatabase(new Travel(currentDate,
                             ActiveAccSharedPreference.getActiveUserPreference(getContext()),
-                            tempMainDestination.getPlaceName(), getDate(dateFormatString, dueDate),
-                            getRandomDrawableResource()));
+                            tempMainDestination.getPlaceName(), getDate(dateFormatString, startDate),
+                            getDate(dateFormatString, endDate), getRandomDrawableResource()));
 
                     Toast.makeText(getContext(), getString(R.string.travel_created_successfully_message), Toast.LENGTH_LONG).show();
 
@@ -308,10 +330,11 @@ public class MainCreateFragment extends Fragment implements
     }
 
     private void initDate() {
-        dueDate = Calendar.getInstance();
+        startDate = Calendar.getInstance();
+        endDate = Calendar.getInstance();
         dateFormatString = getString(R.string.date_format_string);
         altDateFormatString = getString(R.string.alternate_date_format_string);
-        currentDate = getDate(altDateFormatString, dueDate);
+        currentDate = getDate(altDateFormatString, startDate);
     }
 
     private void executeMapPicker(int request) {
@@ -324,8 +347,12 @@ public class MainCreateFragment extends Fragment implements
         }
     }
 
-    private void updateDueDateLabel() {
-        dueDateTextView.setText(getDate(dateFormatString, dueDate));
+    private void updateStartDateLabel() {
+        startDateTextView.setText(getDate(dateFormatString, startDate));
+    }
+
+    private void updateEndDateLabel() {
+        endDateTextView.setText(getDate(dateFormatString, endDate));
     }
 
     public int getRandomDrawableResource (){

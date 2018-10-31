@@ -10,6 +10,8 @@
     <string name="create_edit_btn">Edit</string>
     <string name="create_add_btn">Add</string>
     <string name="create_due_date_lbl">Due Date</string>
+    <string name="create_start_date_lbl">Start Date</string>
+    <string name="create_end_date_lbl">End Date</string>
     <string name="create_main_destination_lbl">Main destination</string>
     <string name="create_locations_lbl">Locations</string>
     <string name="create_people_lbl">People</string>
