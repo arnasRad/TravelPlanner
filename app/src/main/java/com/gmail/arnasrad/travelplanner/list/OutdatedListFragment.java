@@ -2,10 +2,7 @@ package com.gmail.arnasrad.travelplanner.list;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.graphics.Color;
-import android.net.ParseException;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -221,8 +218,6 @@ public class OutdatedListFragment extends Fragment {
                 personCollectionViewModel.deletePersonListByTravelId(travelId);
 
                 travelCollectionViewModel.deleteTravel(travel);
-
-                //ensure View is consistent with underlying data
 
                 listOfTravel.remove(position);
                 adapter.notifyItemRemoved(position);

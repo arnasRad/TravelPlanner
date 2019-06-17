@@ -53,8 +53,8 @@ public class GoogleMapFragment extends Fragment
         GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener,
         ActivityCompat.OnRequestPermissionsResultCallback {
-    static final int DEFAULT_ZOOM = 9;
-    static final int FARTHER_ZOOM = 15;
+    static final int DEFAULT_ZOOM = 4;
+    static final int FARTHER_ZOOM = 9;
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -96,14 +96,11 @@ public class GoogleMapFragment extends Fragment
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                // TODO: Get info about the selected place.
-                Log.i(TAG, "Place: " + place.getName());
                 moveCamera(place.getLatLng(), DEFAULT_ZOOM);
             }
 
             @Override
             public void onError(Status status) {
-                // TODO: Handle the error.
                 Log.i(TAG, "An error occurred: " + status);
             }
         });

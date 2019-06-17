@@ -459,6 +459,7 @@ public class TravelDetailFragment extends Fragment
         } else if (mGoogleMap != null) {
             // Access to the location has been granted to the app.
             mGoogleMap.setMyLocationEnabled(true);
+            mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
             setLocationButtonBottomPosition(48, 48);
         }
     }
@@ -492,7 +493,6 @@ public class TravelDetailFragment extends Fragment
 
     @Override
     public boolean onMyLocationButtonClick() {
-        Toast.makeText(getActivity(), "MyLocation button clicked", Toast.LENGTH_SHORT).show();
         // Return false so that we don't consume the event and the default behavior still occurs
         // (the camera animates to the user's current position).
         return false;
@@ -500,12 +500,7 @@ public class TravelDetailFragment extends Fragment
 
     @Override
     public void onMyLocationClick(@NonNull android.location.Location location) {
-        Toast.makeText(getActivity(), "Current location:\n" + location, Toast.LENGTH_LONG).show();
 
-        /*
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        moveCamera(latLng, DEFAULT_ZOOM);
-        */
     }
 
     @Override

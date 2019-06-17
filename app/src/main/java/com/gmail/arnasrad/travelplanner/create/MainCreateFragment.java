@@ -79,7 +79,7 @@ public class MainCreateFragment extends Fragment implements
     private RecyclerView personRecyclerView;
 
     String currentDate;
-    String dateFormatString;
+    //String dateFormatString;
     String altDateFormatString;
     Calendar startDate;
     Calendar endDate;
@@ -283,11 +283,12 @@ public class MainCreateFragment extends Fragment implements
                     for (Person person : listOfPerson) {
                         newPersonViewModel.addNewPersonToDatabase(person);
                     }
+                    String currentUsername = ActiveAccSharedPreference.getActiveUserPreference(getContext());
 
                     newTravelViewModel.addNewTravelToDatabase(new Travel(currentDate,
-                            ActiveAccSharedPreference.getActiveUserPreference(getContext()),
-                            tempMainDestination.getPlaceName(), getDate(dateFormatString, startDate),
-                            getDate(dateFormatString, endDate), getRandomDrawableResource()));
+                            currentUsername,
+                            tempMainDestination.getPlaceName(), getDate(altDateFormatString, startDate),
+                            getDate(altDateFormatString, endDate), getRandomDrawableResource()));
 
                     Toast.makeText(getContext(), getString(R.string.travel_created_successfully_message), Toast.LENGTH_LONG).show();
 
@@ -332,9 +333,9 @@ public class MainCreateFragment extends Fragment implements
     private void initDate() {
         startDate = Calendar.getInstance();
         endDate = Calendar.getInstance();
-        dateFormatString = getString(R.string.date_format_string);
+        //dateFormatString = getString(R.string.date_format_string);
         altDateFormatString = getString(R.string.alternate_date_format_string);
-        currentDate = getDate(altDateFormatString, startDate);
+        currentDate = getCurrentDate();
     }
 
     private void executeMapPicker(int request) {
@@ -348,11 +349,11 @@ public class MainCreateFragment extends Fragment implements
     }
 
     private void updateStartDateLabel() {
-        startDateTextView.setText(getDate(dateFormatString, startDate));
+        startDateTextView.setText(getDate(altDateFormatString, startDate));
     }
 
     private void updateEndDateLabel() {
-        endDateTextView.setText(getDate(dateFormatString, endDate));
+        endDateTextView.setText(getDate(altDateFormatString, endDate));
     }
 
     public int getRandomDrawableResource (){
@@ -676,10 +677,15 @@ public class MainCreateFragment extends Fragment implements
     }
 
     public String getDate(String format, Calendar date) {
-        Date currentDate = date.getTime();
+        Date currDate = date.getTime();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat(format);
 
-        return dateFormat.format(currentDate);
+        return dateFormat.format(currDate);
+    }
+
+    private String getCurrentDate() {
+        Calendar calendar = Calendar.getInstance();
+        return calendar.getTime().toString();
     }
 }

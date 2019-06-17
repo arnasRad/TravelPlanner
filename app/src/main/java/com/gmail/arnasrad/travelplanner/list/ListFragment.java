@@ -54,7 +54,6 @@ import javax.inject.Inject;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-
 public class ListFragment extends Fragment {
     private static final String DETAIL_FRAG = "DETAIL_FRAG";
     private static final String ARCHIVE_FRAG = "ARCHIVE_FRAG";
@@ -96,7 +95,7 @@ public class ListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        currentDate = getCurrentDate(getString(R.string.date_format_string));
+        currentDate = getCurrentDate(getString(R.string.alternate_date_format_string));
 
         setHasOptionsMenu(true);
         currentUsername = ActiveAccSharedPreference.getActiveUserPreference(getContext());
@@ -120,13 +119,13 @@ public class ListFragment extends Fragment {
         travelCollectionViewModel.getTravels(currentUsername).observe(this, new Observer<List<Travel>>() {
             @Override
             public void onChanged(@Nullable List<Travel> travels) {
-                if (activeList == null) {
+                if (listOfTravel == null) {
                     try {
                         setTravelData(travels);
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
-                } else if (travels.size() != activeList.size()) {
+                } else if (travels.size() != listOfTravel.size()) {
                     try {
                         setTravelData(travels);
                     } catch (ParseException e) {
@@ -248,10 +247,14 @@ public class ListFragment extends Fragment {
 
 
     public void setTravelData(List<Travel> listOfTravel) throws ParseException {
-        this.activeList = new ArrayList<>();
-        this.archiveList = new ArrayList<>();
+        if (activeList == null)
+            activeList = new ArrayList<>();
+        if (archiveList == null)
+            archiveList = new ArrayList<>();
+
         this.listOfTravel = listOfTravel;
-        getActiveListOfTravel(listOfTravel);
+
+        getActiveListOfTravel(this.listOfTravel);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
@@ -296,7 +299,11 @@ public class ListFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull CustomAdapter.CustomViewHolder holder, int position) {
             Travel currentItem = activeList.get(position);
-            String tempDateString = currentItem.getStartDate() + " - " + currentItem.getEndDate();
+            String startDate = currentItem.getStartDate();
+            String endDate = currentItem.getEndDate();
+            String tempDateString;
+
+            tempDateString = startDate + " - " + endDate;
 
             holder.coloredCircle.setImageResource(currentItem.getColorResource());
             holder.message.setText(
@@ -305,9 +312,6 @@ public class ListFragment extends Fragment {
             holder.dateAndTime.setText(
                     tempDateString
             );
-
-            String startDate = currentItem.getStartDate();
-            String endDate = currentItem.getEndDate();
             try {
                 int travelType = getTravelType(startDate, endDate);
 
@@ -407,9 +411,15 @@ public class ListFragment extends Fragment {
         return dateFormat.format(dateCurrDate);
     }
 
+    private String formatDate(String formatString, String date) throws ParseException {
+        Date tempDate = convertStringToDate(date, formatString);
+        DateFormat dateFormat = new SimpleDateFormat(formatString, Locale.ENGLISH);
+        return dateFormat.format(tempDate);
+    }
+
     // checks whether current date is in given date bounds
     private int getTravelType(String startDate, String endDate) throws ParseException {
-        String dateFormat = getString(R.string.date_format_string);
+        String dateFormat = getString(R.string.alternate_date_format_string);
         long currentTime = convertStringToDate(currentDate, dateFormat).getTime();
         long startTime = convertStringToDate(startDate, dateFormat).getTime();
         long endTime = convertStringToDate(endDate, dateFormat).getTime();
@@ -423,7 +433,7 @@ public class ListFragment extends Fragment {
     }
 
     private Date convertStringToDate(String dateString, String formatString) throws ParseException {
-        DateFormat format = new SimpleDateFormat(formatString, Locale.ENGLISH);
+        DateFormat format = new SimpleDateFormat(formatString);
         Date date = format.parse(dateString);
         System.out.println(date);
         return date;
@@ -432,9 +442,11 @@ public class ListFragment extends Fragment {
     private void getActiveListOfTravel(List<Travel> travelList) throws ParseException {
         for (Travel travel: travelList) {
             if (getTravelType(travel.getStartDate(), travel.getEndDate()) == PAST_TRAVEL) {
-                archiveList.add(travel);
+                if (!archiveList.contains(travel))
+                    archiveList.add(travel);
             } else {
-                activeList.add(travel);
+                if (!activeList.contains(travel))
+                    activeList.add(travel);
             }
         }
     }

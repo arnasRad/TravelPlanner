@@ -13,7 +13,7 @@ import static com.gmail.arnasrad.travelplanner.util.BaseActivity.addFragmentToAc
 public class CreateActivity extends AppCompatActivity {
     //private static final String CREATE_FRAG = "CREATE_FRAG";
     private static final String CREATE_MAIN_FRAG = "CREATE_MAIN_FRAG";
-    private static final String GOOGLE_MAP_FRAG = "GOOGLE_MAP_FRAG";
+    //private static final String GOOGLE_MAP_FRAG = "GOOGLE_MAP_FRAG";
     //private static final String CREATE_MAP_FRAG = "CREATE_MAP_FRAG";
 
 
@@ -67,7 +67,7 @@ public class CreateActivity extends AppCompatActivity {
                 CREATE_MAIN_FRAG
         );
     }
-
+/*
     private void startGoogleMapFragment() {
 
         FragmentManager manager = getSupportFragmentManager();
@@ -85,4 +85,5 @@ public class CreateActivity extends AppCompatActivity {
                 GOOGLE_MAP_FRAG
         );
     }
+    */
 }

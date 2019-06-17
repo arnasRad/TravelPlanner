@@ -36,8 +36,7 @@
             android:noHistory="true"
             />
         <activity android:name=".list.ListActivity" />
-        <activity android:name=".create.CreateActivity"
-            android:noHistory="true"/>
+        <activity android:name=".create.CreateActivity"/>
         <activity android:name=".login.LoginActivity" />
         <activity android:name=".login.SignInActivity"
             android:noHistory="true"
